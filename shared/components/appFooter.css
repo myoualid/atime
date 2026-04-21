@@ -1,0 +1,129 @@
+/* Shared app footer styles. Used by the Time, Local Environment, and Food apps.
+   Paired with appFooter.js which builds the DOM. */
+
+.app-footer {
+    flex-shrink: 0;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    padding: 8px 10px 10px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    color: rgba(255, 255, 255, 0.92);
+    font-family: inherit;
+}
+
+.app-footer-inner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.app-footer-block {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    min-width: 0;
+}
+
+.app-footer-location {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    justify-content: center;
+    text-align: center;
+    min-width: 0;
+}
+
+.app-footer-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.12);
+    flex-shrink: 0;
+}
+
+.app-footer-kv {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.app-footer-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.42);
+}
+
+.app-footer-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+    font-variant-numeric: tabular-nums;
+}
+
+.app-footer-phase {
+    min-width: 140px;
+    max-width: 220px;
+    flex: 1 1 160px;
+}
+
+.app-footer-phase-top {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.app-footer-phase-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(212, 175, 55, 0.95);
+}
+
+.app-footer-phase-pct {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    font-variant-numeric: tabular-nums;
+}
+
+.app-footer-phase-bar {
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.app-footer-phase-bar-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: width 0.35s ease, background 0.25s ease;
+}
+
+.app-footer-phase-bar-fill.is-day {
+    background: linear-gradient(90deg, #ffb74d, #ffd54f);
+}
+
+.app-footer-phase-bar-fill.is-night {
+    background: linear-gradient(90deg, #5c6bc0, #7986cb);
+}
+
+.app-footer-phase-bar-fill.is-polar {
+    background: linear-gradient(90deg, #90caf9, #e1f5fe);
+}

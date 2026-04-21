@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreVital Time</title>
+
+    <link rel="stylesheet" href="../../shared/styles/base.css">
+</head>
+<body class="app-time">
+    <script src="../../vendor/signals.min.js"></script>
+    <script src="../../vendor/chart/chart.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "aeco": "../../static/dist/aeco.js",
+                "three": "../../static/vendor/three/build/three.module.js",
+                "three/webgpu": "../../static/vendor/three/build/three.webgpu.js",
+                "three/addons/": "../../static/vendor/three/examples/jsm/",
+                "three/examples/": "../../static/vendor/three/examples/",
+                "three-mesh-bvh": "../../static/vendor/three-mesh-bvh/index.module.js",
+                "three-gpu-pathtracer": "../../static/vendor/three-gpu-pathtracer/build/index.module.js",
+                "3d-tiles-renderer": "../../static/vendor/3d-tiles-renderer/build/index.js",
+                "3d-tiles-renderer/": "../../static/vendor/3d-tiles-renderer/build/",
+                "3d-tiles-renderer/plugins": "../../static/vendor/3d-tiles-renderer/build/index.plugins.js"
+            }
+        }
+    </script>
+
+    <script type="module" src="./app.js"></script>
+</body>
+</html>

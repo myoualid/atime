@@ -3,30 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analog Clock</title>
-
-    <link rel="stylesheet" href="styles.css">
+    <title>CoreVital</title>
+    <link rel="stylesheet" href="./hub.css">
 </head>
 <body>
-    <script src="./vendor/signals.min.js"></script>
-    <script src="./vendor/chart/chart.js"></script>
-    <script type="importmap">
-        {
-            "imports": {
-                "aeco": "./static/dist/aeco.js",
-                "three": "./static/vendor/three/build/three.module.js",
-                "three/webgpu": "./static/vendor/three/build/three.webgpu.js",
-                "three/addons/": "./static/vendor/three/examples/jsm/",
-                "three/examples/": "./static/vendor/three/examples/",
-                "three-mesh-bvh": "./static/vendor/three-mesh-bvh/index.module.js",
-                "three-gpu-pathtracer": "./static/vendor/three-gpu-pathtracer/build/index.module.js",
-                "3d-tiles-renderer": "./static/vendor/3d-tiles-renderer/build/index.js",
-                "3d-tiles-renderer/": "./static/vendor/3d-tiles-renderer/build/",
-                "3d-tiles-renderer/plugins": "./static/vendor/3d-tiles-renderer/build/index.plugins.js"
-            }
-        }
-    </script>
-
-    <script type="module" src="app.js"></script>
+    <main class="hub" aria-label="CoreVital app launcher">
+        <h1>CoreVital</h1>
+        <p>Choose an app. Time contains the clocks and astronomy experience. Health opens the isolated planner workspace for meals, weight, and sports. Local Environment hosts weather and tides.</p>
+        <section class="hub-grid">
+            <a class="hub-card hub-card-time" href="./apps/time/" aria-label="Open time app">
+                <h2>Time</h2>
+                <p>Clocks, lunar/solar views, and simulation controls.</p>
+            </a>
+            <a class="hub-card hub-card-health" href="./apps/health/" aria-label="Open health app">
+                <h2>Health</h2>
+                <p>Standalone planner with food &amp; recipe library, weight tracker, sports planner, day-to-day and weekly planning, shopping lists.</p>
+            </a>
+            <a class="hub-card hub-card-local-environment" href="./apps/local-environment/" aria-label="Open local environment app">
+                <h2>Local Environment</h2>
+                <p>Standalone local weather and marine tide forecasting with historical views.</p>
+            </a>
+        </section>
+    </main>
 </body>
 </html>

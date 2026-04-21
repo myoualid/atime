@@ -1,0 +1,83 @@
+/* DrawUI spinner styles (formerly injected from drawUI/ui.js UISpinner). */
+.spinner-container {
+  --spinner-color: var(--tesla-accent, #3be8b0);
+  --spinner-color-alpha: rgba(59, 232, 176, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  animation: spinner-rotate 1.6s infinite ease;
+  transform-style: preserve-3d;
+}
+
+.spinner > div {
+  background-color: var(--spinner-color-alpha);
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  border: 2px solid var(--spinner-color);
+  box-sizing: border-box;
+}
+
+.spinner div:nth-of-type(1) {
+  transform: translateZ(-12.5px) rotateY(180deg);
+  background-color: var(--spinner-color);
+}
+
+.spinner div:nth-of-type(2) {
+  transform: rotateY(-270deg) translateX(50%);
+  transform-origin: top right;
+}
+
+.spinner div:nth-of-type(3) {
+  transform: rotateY(270deg) translateX(-50%);
+  transform-origin: center left;
+}
+
+.spinner div:nth-of-type(4) {
+  transform: rotateX(90deg) translateY(-50%);
+  transform-origin: top center;
+}
+
+.spinner div:nth-of-type(5) {
+  transform: rotateX(-90deg) translateY(50%);
+  transform-origin: bottom center;
+}
+
+.spinner div:nth-of-type(6) {
+  transform: translateZ(12.5px);
+}
+
+@keyframes spinner-rotate {
+  0% { transform: rotate(45deg) rotateX(-25deg) rotateY(25deg); }
+  50% { transform: rotate(45deg) rotateX(-385deg) rotateY(25deg); }
+  100% { transform: rotate(45deg) rotateX(-385deg) rotateY(385deg); }
+}
+
+.spinner-text {
+  color: var(--text-primary, #fff);
+  font-size: 0.75rem;
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.spinner-percentage {
+  color: var(--spinner-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Orbitron', sans-serif;
+}

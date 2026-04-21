@@ -1,0 +1,553 @@
+@import "../../fonts/material-symbols-outlined.css";
+
+:root {
+    --health-app-bg-1: #0b1a12;
+    --health-app-bg-2: #16331f;
+    --health-app-border: rgba(255, 255, 255, 0.14);
+    --health-app-sidebar-bg: rgba(0, 0, 0, 0.3);
+    --health-app-text: #f4f6f8;
+    --health-app-muted: rgba(244, 246, 248, 0.68);
+    --health-app-accent: #d4af37;
+    --health-app-accent-soft: rgba(212, 175, 55, 0.18);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    min-height: 100%;
+}
+
+body {
+    height: 100dvh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    color: var(--health-app-text);
+    background:
+        radial-gradient(circle at 12% 15%, rgba(143, 227, 136, 0.22), transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(64, 170, 120, 0.18), transparent 46%),
+        linear-gradient(160deg, var(--health-app-bg-1), var(--health-app-bg-2));
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+.health-app-shell {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.health-app-sidebar {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 64px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.22);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.health-app-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.health-app-nav-divider {
+    height: 1px;
+    margin: 4px 8px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.health-app-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 48px;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.health-app-nav-link {
+    text-decoration: none;
+}
+
+.health-app-nav-btn:hover {
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.health-app-nav-btn:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+}
+
+.health-app-nav-btn[aria-pressed="true"],
+.health-app-nav-btn.is-active {
+    background: rgba(212, 175, 55, 0.14);
+    color: #d4af37;
+}
+
+.health-app-nav-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.health-app-nav-label {
+    display: block;
+    text-align: center;
+    line-height: 1.15;
+    max-width: 100%;
+    word-break: break-word;
+}
+
+.health-app-main {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px;
+}
+
+.health-app-main > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+.health-app-main .health-section {
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+}
+
+.FloatingPanel {
+    position: fixed;
+    left: max(72px, 8vw);
+    top: 54px;
+    width: min(560px, calc(100vw - 96px));
+    min-width: 320px;
+    min-height: 240px;
+    max-height: calc(100dvh - 72px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 4000;
+    color: var(--health-app-text);
+    background: linear-gradient(180deg, rgba(10, 15, 24, 0.96), rgba(8, 11, 18, 0.96));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+}
+
+.FloatingPanel .Row {
+    display: flex;
+    flex-direction: row;
+}
+
+.FloatingPanel .centered-vertical {
+    align-items: center;
+}
+
+.FloatingPanel .justify-between {
+    justify-content: space-between;
+}
+
+.FloatingPanel .fill-width {
+    width: 100%;
+}
+
+.FloatingPanel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.FloatingPanel-content {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 6px;
+}
+
+@media (max-width: 720px) {
+    .FloatingPanel {
+        left: 10px;
+        right: 10px;
+        width: auto;
+        min-width: 0;
+        top: 16px;
+        max-height: calc(100dvh - 28px);
+    }
+}
+
+.health-library-review {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 14px;
+    background: rgba(6, 10, 16, 0.38);
+    backdrop-filter: blur(8px);
+}
+
+.health-library-review-header {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.health-library-review-title {
+    margin: 0;
+    color: #d4af37;
+    font-size: 1.08rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.health-library-review-subtitle {
+    margin: 0;
+    color: rgba(244, 246, 248, 0.72);
+    font-size: 0.88rem;
+}
+
+.health-library-review-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+}
+
+.health-library-review-search {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: rgba(0, 0, 0, 0.28);
+    color: var(--health-app-text);
+    font: inherit;
+}
+
+.health-library-review-kind-tabs {
+    display: inline-flex;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.health-library-review-kind-tabs button {
+    min-width: 78px;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.22);
+    color: rgba(255, 255, 255, 0.82);
+    padding: 8px 12px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.health-library-review-kind-tabs button:last-child {
+    border-right: none;
+}
+
+.health-library-review-kind-tabs button[aria-selected="true"] {
+    background: rgba(212, 175, 55, 0.18);
+    color: #d4af37;
+}
+
+.health-library-review-view-toggle {
+    display: inline-flex;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.health-library-review-view-toggle button {
+    min-width: 74px;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.22);
+    color: rgba(255, 255, 255, 0.82);
+    padding: 8px 12px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.health-library-review-view-toggle button:last-child {
+    border-right: none;
+}
+
+.health-library-review-view-toggle button[aria-pressed="true"] {
+    background: rgba(212, 175, 55, 0.18);
+    color: #d4af37;
+}
+
+.health-library-review-stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.health-library-review-stat {
+    min-width: 120px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 9px;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.health-library-review-stat-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: rgba(244, 246, 248, 0.6);
+}
+
+.health-library-review-stat-value {
+    font-size: 1rem;
+    color: #d4af37;
+}
+
+.health-library-review-content {
+    min-height: 0;
+    overflow: auto;
+}
+
+.health-library-review-empty {
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    color: rgba(244, 246, 248, 0.68);
+}
+
+.health-library-review-list {
+    display: grid;
+    gap: 6px;
+}
+
+.health-library-review-list-row {
+    display: grid;
+    grid-template-columns: 88px minmax(180px, 1.3fr) minmax(120px, 0.9fr) minmax(150px, 1fr) minmax(170px, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.22);
+    font-size: 0.83rem;
+    cursor: pointer;
+}
+
+.health-library-review-list-row:not(.is-head):hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.health-library-review-list-row:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+}
+
+.health-library-review-list-row.is-head {
+    background: rgba(212, 175, 55, 0.08);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(244, 246, 248, 0.68);
+}
+
+.health-library-review-name {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+}
+
+.kind-chip {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.kind-food {
+    color: #8fe388;
+    border-color: rgba(143, 227, 136, 0.55);
+    background: rgba(143, 227, 136, 0.12);
+}
+
+.kind-recipe {
+    color: #8fc3df;
+    border-color: rgba(143, 195, 223, 0.55);
+    background: rgba(143, 195, 223, 0.12);
+}
+
+.health-library-review-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.health-library-review-card {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 11px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.health-library-review-card:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.health-library-review-card:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+}
+
+.health-library-review-card-thumb {
+    width: 100%;
+    height: 130px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.health-library-review-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.health-library-review-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+}
+
+.health-library-review-card-body {
+    padding: 10px;
+    display: grid;
+    gap: 6px;
+}
+
+.health-library-review-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.76rem;
+    color: rgba(244, 246, 248, 0.7);
+}
+
+.health-library-review-card h3 {
+    margin: 0;
+    font-size: 0.96rem;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.health-library-review-card p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(244, 246, 248, 0.76);
+    line-height: 1.35;
+}
+
+.health-app-error {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+@media (max-width: 520px) {
+    .health-app-nav-label {
+        display: none;
+    }
+
+    .health-app-nav-btn {
+        min-height: 52px;
+    }
+
+    .health-library-review {
+        padding: 10px;
+    }
+
+    .health-library-review-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .health-library-review-list-row,
+    .health-library-review-list-row.is-head {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding: 9px;
+    }
+}
+
+@media (min-width: 640px) {
+    .health-app-sidebar {
+        width: 84px;
+    }
+
+    .health-app-nav-btn {
+        font-size: 0.68rem;
+    }
+}
+
+@media (min-width: 900px) {
+    .health-app-sidebar {
+        width: 200px;
+    }
+
+    .health-app-nav-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+        min-height: 48px;
+        padding: 12px 14px;
+        font-size: 0.8rem;
+    }
+
+    .health-app-nav-label {
+        text-align: left;
+    }
+}

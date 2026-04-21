@@ -1,0 +1,3653 @@
+@import "../../fonts/material-symbols-outlined.css";
+@import "../components/appFooter.css";
+
+:root {
+
+  --border-game-hud: 1px solid rgba(100, 159, 248, 0.3);
+  --game-font: 'Rajdhani', 'Orbitron', sans-serif;
+
+  --theme-background: #0a0e12;
+  --theme-background-1618: #1b1e1bcf;
+  --game-hud-background: linear-gradient(rgba(0, 0, 0, 0.5));
+  --game-hud-strong: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.2));
+  --glass-surface: rgba(13, 17, 23, 0.85);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  --theme-text: #e6edf3;
+  --theme-text-light: #b9c2b6;
+  --theme-subtext: #b9c2b6;
+
+  --brand-color: #00d4aa;
+  --brand-color-soft: rgba(0, 212, 170, 0.15);
+  --brand-color-alpha: rgba(0, 212, 170, 0.25);
+  --on-brand-color: #ffffff;
+  --border-on-brand-color: rgba(0, 212, 170, 0.3);
+  --brand-color-hover: #00f5c4;
+
+  --blue: #58a6ff;
+  --red: #f85149;
+  --yellow: #d29922;
+  --green: #3fb950;
+  --orange: #db6d28;
+
+  --active: var(--brand-color-alpha);
+
+  --border: rgba(48, 54, 61, 0.281);
+  --border-hover: var(--brand-color-alpha);
+  --glass-blur: saturate(50%) blur(20px);
+  --glass-strong-blur: saturate(60%) blur(40px);
+
+  --border-focus: var(--brand-color);
+  --theme-hover-bg: rgba(22, 27, 34, 0.9);
+
+  --glass-border: var(--border);
+  --glass-border-hover: var(--brand-color-alpha);
+  --glass-surface-light: rgba(22, 27, 34, 0.95);
+  --glass-surface-hover: rgba(33, 38, 45, 0.95);
+  --glass-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  --windowbar-surface: rgba(18, 20, 24, 0.55);
+  --windowbar-surface-strong: rgba(10, 12, 16, 0.75);
+  --windowbar-border: rgba(255, 255, 255, 0.10);
+  --windowbar-highlight: rgba(255, 255, 255, 0.12);
+  --windowbar-shadow: 0 8px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --windowbar-blur: saturate(180%) blur(28px);
+
+  --spacing-xs: var(--phi-0-2-5);
+  --spacing-sm: var(--phi-0-5);
+  --spacing-md: var(--phi-0);
+  --spacing-lg: var(--phi-1);
+
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+
+  --theme-success: var(--green);
+  --theme-warning: var(--yellow);
+  --theme-error: var(--red);
+  --theme-accent: var(--brand-color);
+  --theme-text-secondary: var(--theme-text-light);
+  --theme-error-rgba-008: rgba(248, 81, 73, 0.08);
+
+  --color-status-notstarted: var(--theme-text-light);
+  --color-status-started: var(--yellow);
+  --color-status-completed: var(--green);
+  --color-status-paused: var(--red);
+
+  --config-width: 20vw;
+
+  --phi-0-2-5: 3px;
+  --phi-0-5: 7px;
+  --phi-0-51: 7px;
+  --phi-0: 12px;
+  --phi-0-1: 17.28px;
+  --phi-1: 19.416px;
+  --phi-1-1: 27.95px;
+  --phi-2: 31.416px;
+  --phi-3: 51.032px;
+  --phi-4: 82.448px;
+  --phi-5: 133.481px;
+  --phi-6: 215.929px;
+
+  --icon-size: var(--phi-1);
+  --icon-text-size: var(--phi-0);
+  --fontsize-body: var(--phi-1);
+
+  --panel-width-desktop: 15vw;
+  --panel-width-phone: 45vw;
+  --ui-lane-left-width: min(33vw, 420px);
+  --ui-lane-right-width: min(33vw, 420px);
+  --ui-safe-top: calc(var(--headerbar-height));
+  --ui-safe-bottom: var(--phi-0-5);
+  --border-radius: var(--radius-md);
+  --transition-fast: 0.15s ease;
+  --transition-medium: 0.2s ease;
+  --transition-slow: 0.25s ease;
+
+  --margin: var(--phi-2);
+
+  --world-width: 100%;
+  --world-height: 100%;
+
+  --state-bar-right: calc(var(--phi-0-5) + var(--viewport-information-width));
+
+  --headerbar-height: 36px;
+  --headerbar-width: 100%;
+  --headerbar-top: 0px;
+  --headerbar-left: 0px;
+
+  --sidebar-width: 44px;
+  --sidebar-height: 100%;
+  --sidebar-top: 0px;
+  --sidebar-left: calc(100% - var(--sidebar-width));
+
+  --information-operator-top: var(--phi-1);
+  --information-operator-left: var(--phi-1);
+
+  --user-menu-height: var(--headerbar-height);
+  --user-menu-width: var(--sidebar-width);
+
+  --addons-menu-height: 50%;
+  --addons-menu-width: 100%;
+  --addons-menu-top: var(--user-menu-height);
+
+  --modules-menu-height: 50%;
+  --modules-menu-width: 100%;
+  --modules-menu-top: calc(var(--user-menu-height) + var(--addons-menu-height));
+
+  --viewport-width: calc(100% - var(--sidebar-width));
+  --viewport-height: calc(100% - var(--headerbar-height));
+  --viewport-top: var(--headerbar-height);
+  --viewport-left: 0px;
+
+  --viewport-gizmo-size: var(--phi-4);
+  --viewport-gizmo-top: calc(var(--headerbar-height));
+  --viewport-gizmo-left: calc(var(--sidebar-width) + var(--phi-0-5));
+
+  --viewport-information-width: calc(var(--viewport-gizmo-size) + var(--sidebar-width));
+
+  --viewport-toolbar-height: 50vh;
+  --viewport-toolbar-width: var(--phi-4);
+  --viewport-toolbar-top: calc(var(--viewport-gizmo-top) + var(--viewport-gizmo-size));
+  --viewport-toolbar-right: var(--viewport-gizmo-left);
+
+  --addon-navigation-horizontal-inset: var(--phi-0-5);
+  --addon-navigation-bottom-inset: var(--phi-0-5);
+  --addon-navigation-left-stack-max-width: min(92vw, 320px);
+  --addon-navigation-right-stack-offset: var(--sidebar-width);
+  --addon-navigation-hud-clearance-height: 180px;
+  --addon-navigation-hud-gap: var(--phi-0-5);
+  --construction-hud-max-width: min(42vw, 420px);
+  --construction-hud-max-height: 50%;
+  --construction-hud-bottom: calc(
+    var(--addon-navigation-bottom-inset) +
+    var(--addon-navigation-hud-clearance-height) +
+    var(--addon-navigation-hud-gap)
+  );
+
+  --job-configuration-top: calc(var(--viewport-height) - var(--margin));
+  --job-configuration-left: calc(var(--viewport-width) - var(--sidebar-width) - var(--margin));
+  --exercises-width: var(--sidebar-width);
+
+  --font-size-xs: 0.6875rem;
+  --font-size-sm: 0.75rem;
+  --font-size-md: 0.8125rem;
+  --font-size-lg: 0.9375rem;
+
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  --font-ui: 'Rajdhani', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Override global app shell rule (master.css); main scroll lives in .app-panel-scroll */
+html {
+    height: 100%;
+}
+
+html,
+body {
+    height: 100%;
+    max-height: 100dvh;
+    -webkit-overflow-scrolling: touch;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+body.app-time {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(100, 212, 214, 0.18), transparent 42%),
+        radial-gradient(circle at 85% 85%, rgba(80, 160, 200, 0.14), transparent 46%),
+        linear-gradient(135deg, #0d1a2b 0%, #12314a 100%);
+}
+
+body.app-local-environment {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(180, 125, 255, 0.22), transparent 42%),
+        radial-gradient(circle at 85% 85%, rgba(120, 90, 200, 0.18), transparent 46%),
+        linear-gradient(135deg, #15122b 0%, #261a45 100%);
+}
+
+/* Make tab panels scrollable (master.css sets overflow:hidden) */
+.TabbedPanel,
+.inner-tabbed-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: 100vh;
+}
+
+.TabbedPanel .Panels,
+.inner-tabbed-panel .Panels {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.Panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    overflow: visible;
+}
+
+/* —— App shell: column = [ sidebar + main ] + full-width footer —— */
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin: 0 auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    gap: 0;
+}
+
+.app-main-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    gap: 0;
+}
+
+.app-side-nav {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 64px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.22);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.app-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 48px;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+a.app-nav-btn,
+a.app-nav-btn:hover,
+a.app-nav-btn:focus,
+a.app-nav-btn:visited {
+    text-decoration: none;
+}
+
+.app-nav-btn:hover {
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.app-nav-btn:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+}
+
+.app-nav-btn[aria-pressed="true"] {
+    background: rgba(212, 175, 55, 0.14);
+    color: #d4af37;
+}
+
+.app-nav-icon {
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.app-nav-label {
+    display: block;
+    text-align: center;
+    line-height: 1.15;
+    max-width: 100%;
+    word-break: break-word;
+}
+
+.Panel.app-main-panel {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+    padding: 7px 7px;
+    width: auto;
+    gap: 0;
+}
+
+.app-panel-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+.app-section {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 24px;
+}
+
+.app-section.is-active {
+    display: flex;
+}
+
+.app-section > * {
+    max-width: 100%;
+}
+
+.moon-clocks-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    justify-items: stretch;
+    align-items: start;
+}
+
+.year-month-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    justify-items: stretch;
+    align-items: start;
+}
+
+#section-moon .clock-slot {
+    max-width: 100%;
+}
+
+#section-year-month .clock-slot {
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .moon-clocks-grid,
+    .year-month-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app-nav-label {
+        display: none;
+    }
+
+    .app-nav-btn {
+        min-height: 52px;
+    }
+}
+
+@media (min-width: 640px) {
+    .app-side-nav {
+        width: 84px;
+    }
+
+    .app-nav-btn {
+        font-size: 0.68rem;
+    }
+}
+
+@media (min-width: 900px) {
+    .app-side-nav {
+        width: 200px;
+    }
+
+    .app-nav-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 12px;
+        min-height: 48px;
+        padding: 12px 14px;
+        font-size: 0.8rem;
+    }
+
+    .app-nav-label {
+        text-align: left;
+    }
+}
+
+h1 {
+    color: #d4af37;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 1.8rem;
+}
+
+h2 {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.clocks-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.subdials-row {
+    margin-top: 10px;
+}
+
+/* Flex row helpers (DrawUI.row + addClass) */
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+/* Now section: three hero clocks share width evenly, no overlap */
+.hero-clocks-row {
+    width: 100%;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+
+.hero-clocks-row > .clock-cell {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+@media (max-width: 520px) {
+    .hero-clocks-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-clocks-row > .clock-cell {
+        flex: 0 0 auto;
+        width: min(100%, 22rem);
+    }
+}
+
+/* Clocks Grid — equal columns; clocks scale from cell width (container queries) */
+.clocks-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 22px);
+    width: 100%;
+    align-items: start;
+    justify-items: stretch;
+}
+
+.clock-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: clamp(8px, 2vw, 18px);
+    overflow: visible;
+    min-width: 0;
+    width: 100%;
+    padding-block: 4px 8px;
+}
+
+.clock-cell > h2 {
+    width: 100%;
+    margin: 0 0 2px;
+    padding-inline: 4px;
+    box-sizing: border-box;
+}
+
+/* Slot defines the square the SVG clock is scaled into */
+.clock-slot {
+    container-type: inline-size;
+    container-name: clockslot;
+    width: 100%;
+    max-width: min(100%, 22rem);
+    margin-inline: auto;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 0;
+}
+
+.clock-cell:has(.year-progress-heatmap) .clock-slot {
+    aspect-ratio: unset;
+    max-width: 100%;
+    min-height: 104px;
+    overflow-x: auto;
+    overflow-y: visible;
+    align-items: stretch;
+    justify-content: stretch;
+}
+
+/* 300px design clocks — scale to fit slot (cap so laptop grids do not oversize) */
+.clock-cell .clock-container:not(.seconds-clock):not(.day-clock):not(.year-progress-heatmap) {
+    width: 300px;
+    height: 300px;
+    flex-shrink: 0;
+    transform: scale(min(1.35, calc(100cqw / 300px)));
+    transform-origin: center center;
+    margin: 0;
+}
+
+/* 150px design subdials */
+.clock-cell .seconds-clock,
+.clock-cell .day-clock {
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+    transform: scale(min(2.2, calc(100cqw / 150px)));
+    transform-origin: center center;
+    margin: 0;
+}
+
+.clock-cell .clock-info {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-inline: 4px;
+    text-align: center;
+    text-wrap: balance;
+}
+
+.hero-clocks-row .clock-info {
+    font-size: clamp(0.62rem, 2.6vw, 0.88rem);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 1600px) {
+    .clocks-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: clamp(10px, 1.8vw, 18px);
+    }
+}
+
+@media (max-width: 1200px) {
+    .clocks-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .clocks-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .Panel:not(.app-main-panel) {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .clocks-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.clock-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.subdial-section .clock-container {
+    width: 150px;
+    height: 150px;
+}
+
+.clock-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+/* ============================================
+   CLOCK GALLERY ZOOM (2x focus view)
+   ============================================ */
+.clock-gallery-item {
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.clock-gallery-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.clock-cell.zoomed.clock-gallery-item:hover {
+    transform: none;
+}
+
+.clock-cell.zoomed {
+    padding: 28px 18px;
+    gap: 14px;
+    grid-column: span 2;
+    grid-row: span 2;
+    z-index: 50;
+    position: relative;
+    overflow: visible;
+}
+
+/* Zoomed card: enlarge relative to the same slot (wider cell when grid span applies) */
+.clock-cell.zoomed .clock-container:not(.seconds-clock):not(.day-clock):not(.year-progress-heatmap) {
+    transform: scale(min(2.1, calc((100cqw / 300px) * 1.5)));
+    margin: 0;
+    transform-origin: center center;
+}
+
+.clock-cell.zoomed .clock-container.year-progress-heatmap {
+    transform: none;
+    width: 100%;
+    max-width: min(100%, 52rem);
+    min-height: 140px;
+}
+
+.clock-cell.zoomed .clock-slot {
+    flex: 1;
+    align-items: center;
+    max-width: min(100%, 36rem);
+}
+
+.clock-cell.zoomed .seconds-clock,
+.clock-cell.zoomed .day-clock {
+    transform: scale(min(3.5, calc((100cqw / 150px) * 1.5)));
+    margin: 0;
+    transform-origin: center center;
+}
+
+.clock-zoom-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 5000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.clock-zoom-overlay.show {
+    display: flex;
+}
+
+.clock-zoom-modal {
+    position: relative;
+    width: min(980px, 100%);
+    max-height: 100%;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.clock-zoom-close {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.95);
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.clock-zoom-close:hover {
+    background: rgba(212, 175, 55, 0.22);
+    border-color: rgba(212, 175, 55, 0.6);
+}
+
+.clock-zoom-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 0;
+}
+
+/* ============================================
+   MAIN ANALOG CLOCK (Roman Numerals)
+   ============================================ */
+.analog-clock .clock-face {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f5f5f0, #e8e8e0);
+    border: 8px solid #c0c0c0;
+}
+
+.roman-numeral {
+    position: absolute;
+    color: #1a1a2e;
+    font-size: 22px;
+    font-weight: 400;
+    font-family: 'Times New Roman', Georgia, serif;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    line-height: 1;
+    z-index: 2;
+}
+
+.analog-clock .hour-tick {
+    position: absolute;
+    width: 2px;
+    height: 15px;
+    background: #333;
+    top: 5px;
+    left: 50%;
+    transform-origin: center 145px;
+    margin-left: -1px;
+}
+
+.analog-clock .minute-marker {
+    position: absolute;
+    width: 1px;
+    height: 8px;
+    background: #999;
+    top: 5px;
+    left: 50%;
+    transform-origin: center 145px;
+    margin-left: -0.5px;
+}
+
+.analog-clock .clock-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(145deg, #1e3a5f, #0f1f3a);
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.analog-clock .hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 2px;
+}
+
+.analog-clock .hour-hand {
+    width: 6px;
+    height: 65px;
+    background: linear-gradient(to top, #1e3a5f, #2a4a70);
+    margin-left: -3px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.analog-clock .minute-hand {
+    width: 4px;
+    height: 95px;
+    background: linear-gradient(to top, #1e3a5f, #2a4a70);
+    margin-left: -2px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.analog-clock .second-hand {
+    width: 2px;
+    height: 110px;
+    background: linear-gradient(to top, #1e3a5f, #2a4a70);
+    margin-left: -1px;
+}
+
+/* ============================================
+   MOON PHASE CLOCK
+   ============================================ */
+.moon-clock {
+    background: linear-gradient(145deg, #f5f5f0, #e8e8e0);
+    border-radius: 50%;
+    border: 8px solid #c0c0c0;
+    box-shadow: 
+        0 0 0 4px #a0a0a0,
+        0 0 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+}
+
+.moon-disc {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: #0a1628;
+    overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+.moon-sphere {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f4f4f4 0%, #e0e0e0 50%, #c0c0c0 100%);
+    overflow: hidden;
+}
+
+.moon-shadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #0a1628;
+    border-radius: 50%;
+    transition: transform 0.5s ease;
+}
+
+.moon-marker {
+    position: absolute;
+    width: 1px;
+    height: 8px;
+    background: rgba(50, 50, 50, 0.6);
+    top: 10px;
+    left: 50%;
+    transform-origin: center 140px;
+    margin-left: -0.5px;
+    z-index: 10;
+}
+
+.moon-marker.major {
+    width: 2px;
+    height: 12px;
+    background: rgba(80, 80, 80, 0.9);
+    margin-left: -1px;
+}
+
+.moon-phase-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(100, 100, 120, 0.9);
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 0.5px;
+    text-align: center;
+    z-index: 12;
+    white-space: nowrap;
+}
+
+.moon-time-remaining {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(220, 220, 240, 0.95);
+    font-family: 'Times New Roman', Georgia, serif;
+    text-align: center;
+    z-index: 25;
+    line-height: 1.4;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.5px;
+}
+
+.moon-time-remaining .time-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    font-family: 'Times New Roman', Georgia, serif;
+}
+
+.moon-phase-icon {
+    position: absolute;
+    font-size: 24px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 15;
+    text-shadow: 0 0 8px rgba(255,255,255,0.8);
+}
+
+.phase-new { color: #c0c0c0; }
+.phase-first { color: #e0e0e0; }
+.phase-full { color: #fffde7; text-shadow: 0 0 10px rgba(255,253,200,0.9); }
+.phase-last { color: #e0e0e0; }
+
+/* Line from center to perimeter */
+.quarter-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 130px;
+    background: rgba(255,255,255,0.4);
+    margin-left: -1px;
+    margin-top: -130px;
+    transform-origin: bottom center;
+    z-index: 10;
+}
+
+/* Arrow head pointing outward at perimeter */
+.quarter-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 8px solid rgba(255,255,255,0.8);
+    margin-left: -5px;
+    margin-top: -135px;
+    transform-origin: center 135px;
+    z-index: 10;
+}
+
+.moon-day-number {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1a1a2e;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Times New Roman', Georgia, serif;
+}
+
+.moon-29-label {
+    position: absolute;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: 'Times New Roman', Georgia, serif;
+    z-index: 10;
+}
+
+.moon-clock .moon-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 3px;
+    height: 85px;
+    background: linear-gradient(to top, #1e3a5f, #4a7ab0);
+    margin-left: -1.5px;
+    transform-origin: bottom center;
+    border-radius: 2px;
+    z-index: 15;
+    box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+
+.moon-clock .moon-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(145deg, #d4af37, #b8960c);
+    border-radius: 50%;
+    z-index: 20;
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+}
+
+/* ============================================
+   MOONRISE/MOONSET CLOCK
+   ============================================ */
+/* Inherits from moon-clock base styles */
+
+.moonrise-hour-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(220, 220, 240, 0.95);
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    z-index: 12;
+}
+
+.moonrise-hour-label.minor {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(180, 180, 200, 0.7);
+}
+
+.moonrise-marker {
+    position: absolute;
+    font-size: 18px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 15;
+    color: rgba(255, 220, 150, 0.95);
+    text-shadow: 0 0 8px rgba(255, 200, 100, 0.8);
+}
+
+.moonrise-marker.rise {
+    color: rgba(255, 230, 150, 1);
+    text-shadow: 0 0 10px rgba(255, 220, 100, 0.9);
+}
+
+.moonrise-marker.set {
+    color: rgba(200, 180, 255, 0.95);
+    text-shadow: 0 0 8px rgba(150, 130, 200, 0.8);
+}
+
+.moonrise-period-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(180, 180, 200, 0.8);
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 1px;
+    text-align: center;
+    z-index: 12;
+}
+
+/* ============================================
+   YEAR PROGRESS CLOCK
+   ============================================ */
+.year-clock {
+    background: linear-gradient(145deg, #f5f5f0, #e8e8e0);
+    border-radius: 50%;
+    border: 8px solid #c0c0c0;
+    box-shadow: 
+        0 0 0 4px #a0a0a0,
+        0 0 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+.year-progress-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.year-bg-circle {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.1);
+    stroke-width: 10;
+}
+
+.year-progress-circle {
+    fill: none;
+    stroke: #4ade80;
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease;
+}
+
+.week-marker {
+    position: absolute;
+    width: 2px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    top: 12px;
+    left: 50%;
+    transform-origin: center 138px;
+    margin-left: -1px;
+}
+
+.week-number {
+    position: absolute;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 9px;
+    font-weight: 500;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.year-clock .year-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 4px;
+    height: 100px;
+    background: linear-gradient(to top, #22c55e, #4ade80);
+    margin-left: -2px;
+    transform-origin: bottom center;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.year-clock .year-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(145deg, #4ade80, #22c55e);
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.year-percent-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: 700;
+    color: #22c55e;
+    z-index: 15;
+    pointer-events: none;
+}
+
+/* ============================================
+   YEAR PROGRESS HEATMAP (additive)
+   ============================================ */
+.clock-container.year-progress-heatmap {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 88px;
+    flex: 1;
+    align-self: stretch;
+    transform: none;
+    margin: 0;
+}
+
+.year-heatmap-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+}
+
+.year-heatmap-months {
+    position: relative;
+    height: 14px;
+    width: 100%;
+    min-width: 0;
+}
+
+.year-heatmap-month-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.year-heatmap-body {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 6px;
+    min-height: 72px;
+    min-width: 0;
+}
+
+.year-heatmap-dow {
+    display: grid;
+    grid-template-rows: repeat(7, minmax(0, 1fr));
+    flex: 0 0 1.75rem;
+    padding-top: 1px;
+}
+
+.year-heatmap-dow-label {
+    font-size: 0.58rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 2px;
+}
+
+.year-heatmap-cells {
+    flex: 1;
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-rows: repeat(7, minmax(7px, 1fr));
+    gap: 3px;
+    min-width: 0;
+}
+
+.year-heatmap-cell {
+    border-radius: 3px;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.year-heatmap-cell.year-heatmap-out {
+    background: rgba(40, 48, 58, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.year-heatmap-cell.year-heatmap-future {
+    background: rgba(55, 65, 80, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.year-heatmap-cell.year-heatmap-passed {
+    background: linear-gradient(160deg, #22c55e, #15803d);
+    border: 1px solid rgba(74, 222, 128, 0.35);
+}
+
+.year-heatmap-cell.year-heatmap-today.year-heatmap-passed {
+    background: linear-gradient(160deg, #4ade80, #22c55e);
+    box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.5), 0 0 10px rgba(34, 197, 94, 0.35);
+}
+
+/* ============================================
+   SUBDIALS (Day of Month, Seconds)
+   ============================================ */
+.subdial-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f5f5f0, #e8e8e0);
+    border: 4px solid #c0c0c0;
+    box-shadow: 
+        0 0 0 2px #a0a0a0,
+        inset 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.day-label, .seconds-label {
+    position: absolute;
+    color: #1a1a2e;
+    font-size: 10px;
+    font-weight: 500;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.day-marker {
+    position: absolute;
+    width: 1px;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    top: 8px;
+    left: 50%;
+    transform-origin: center 67px;
+}
+
+.subdial-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(145deg, #1e3a5f, #0f1f3a);
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.subdial-center.gold {
+    background: linear-gradient(145deg, #d4af37, #b8960c);
+}
+
+.day-clock .day-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 2px;
+    height: 45px;
+    background: linear-gradient(to top, #d4af37, #b8960c);
+    margin-left: -1px;
+    transform-origin: bottom center;
+    border-radius: 2px;
+}
+
+.seconds-clock .subdial-second-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 2px;
+    height: 50px;
+    background: linear-gradient(to top, #d4af37, #b8960c);
+    margin-left: -1px;
+    transform-origin: bottom center;
+    border-radius: 2px;
+}
+
+/* ============================================
+   DIGITAL DISPLAYS
+   ============================================ */
+.digital-time {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+}
+
+.digital-time.small {
+    font-size: 0.85rem;
+}
+
+/* ============================================
+   SOLAR SEASONS CLOCK
+   ============================================ */
+.solar-clock {
+    overflow: visible;
+}
+
+.solar-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f5f5f0, #e8e8e0);
+    border: 8px solid #c0c0c0;
+    box-shadow: 
+        0 0 0 4px #a0a0a0,
+        0 0 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+}
+
+.seasons-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.month-label {
+    position: absolute;
+    font-size: 10px;
+    font-weight: 500;
+    color: #1a1a2e;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Times New Roman', Georgia, serif;
+    z-index: 2;
+}
+
+.season-name-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 600;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    letter-spacing: 1px;
+    opacity: 0.7;
+}
+
+.solar-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 300px;
+    margin-left: -1px;
+    margin-top: -150px;
+    transform-origin: center center;
+    z-index: 1;
+}
+
+.solar-line.solstice {
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        rgba(255, 140, 0, 0.4) 20%, 
+        rgba(255, 140, 0, 0.4) 80%, 
+        transparent 100%);
+}
+
+.solar-line.equinox {
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        rgba(100, 149, 237, 0.4) 20%, 
+        rgba(100, 149, 237, 0.4) 80%, 
+        transparent 100%);
+}
+
+.solar-icon {
+    position: absolute;
+    font-size: 24px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 15;
+}
+
+.solar-icon.solstice {
+    text-shadow: 0 0 10px rgba(255, 200, 50, 0.8);
+}
+
+.solar-icon.equinox {
+    color: #6495ed;
+    text-shadow: 0 0 8px rgba(100, 149, 237, 0.6);
+}
+
+.solar-date-label {
+    position: absolute;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
+}
+
+.solar-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 4px;
+    height: 100px;
+    background: linear-gradient(to top, #ff8c00, #ffa500);
+    margin-left: -2px;
+    transform-origin: bottom center;
+    border-radius: 2px;
+    z-index: 6;
+    box-shadow: 0 0 8px rgba(255, 140, 0, 0.5);
+}
+
+.solar-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(145deg, #ff8c00, #ffa500);
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+/* ============================================
+   DAY/NIGHT PROPORTION BAR
+   ============================================ */
+.daynight-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+}
+
+.daynight-container {
+    width: 100%;
+}
+
+.daynight-wrapper {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    padding-top: 20px;
+}
+
+.daynight-timeline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+}
+
+.daynight-tick {
+    position: absolute;
+    top: 15px;
+    width: 1px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-50%);
+}
+
+.daynight-hour {
+    position: absolute;
+    top: 0;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    transform: translateX(-50%);
+    font-family: 'Courier New', monospace;
+}
+
+.daynight-bar {
+    position: absolute;
+    top: 25px;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: #0a1628;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.daynight-segment {
+    position: absolute;
+    top: 0;
+    height: 100%;
+}
+
+.daynight-segment.night {
+    background: linear-gradient(180deg, #0a1628, #1a1a3e);
+}
+
+.daynight-segment.dawn,
+.daynight-segment.dusk {
+    background: linear-gradient(90deg, #1a1a3e, #ff7f50, #ffa500);
+}
+
+.daynight-segment.dusk {
+    background: linear-gradient(90deg, #ffa500, #ff7f50, #1a1a3e);
+}
+
+.daynight-segment.day {
+    background: linear-gradient(180deg, #87ceeb, #add8e6);
+}
+
+.daynight-indicator {
+    position: absolute;
+    top: 22px;
+    width: 4px;
+    height: 36px;
+    background: #fff;
+    border-radius: 2px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    z-index: 10;
+}
+
+.daynight-label {
+    position: absolute;
+    top: 60px;
+    font-size: 14px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+.daynight-label.sunrise {
+    color: #ffa500;
+}
+
+.daynight-label.sunset {
+    color: #ff6347;
+}
+
+/* ============================================
+   SEASONS SECTION + LINEAR SOLAR-YEAR TIMELINE
+   ============================================ */
+.seasons-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 1.2vw, 12px);
+}
+
+.seasons-section > h2 {
+    width: 100%;
+    margin: 0;
+    padding-inline: 4px;
+    box-sizing: border-box;
+}
+
+.seasons-section-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(10px, 2vw, 18px);
+}
+
+.seasons-section-inner > .clock-cell {
+    width: 100%;
+}
+
+.seasons-timeline-container {
+    width: 100%;
+    max-width: min(100%, 36rem);
+}
+
+.seasons-timeline-wrapper {
+    position: relative;
+    width: 100%;
+    height: 72px;
+    padding-top: 22px;
+}
+
+.seasons-timeline-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 18px;
+}
+
+.seasons-timeline-season-label {
+    position: absolute;
+    top: 0;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+.seasons-timeline-bar {
+    position: absolute;
+    top: 26px;
+    left: 0;
+    width: 100%;
+    height: 28px;
+    background: rgba(10, 22, 40, 0.85);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.seasons-timeline-segment {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    box-sizing: border-box;
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.seasons-timeline-segment:last-of-type {
+    border-right: none;
+}
+
+.seasons-timeline-segment.spring {
+    background: linear-gradient(180deg, #7dce82, #90ee90);
+}
+
+.seasons-timeline-segment.summer {
+    background: linear-gradient(180deg, #ffd54f, #ffdb58);
+}
+
+.seasons-timeline-segment.autumn {
+    background: linear-gradient(180deg, #c4953a, #daa520);
+}
+
+.seasons-timeline-segment.winter {
+    background: linear-gradient(180deg, #8ecae6, #a8d5e5);
+}
+
+.seasons-timeline-events {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.seasons-timeline-event-tick {
+    position: absolute;
+    bottom: 2px;
+    width: 2px;
+    height: 22px;
+    transform: translateX(-50%);
+    border-radius: 1px;
+    pointer-events: auto;
+}
+
+.seasons-timeline-event-tick.solstice {
+    background: linear-gradient(to top, rgba(255, 140, 0, 0.95), rgba(255, 200, 80, 0.5));
+    box-shadow: 0 0 6px rgba(255, 160, 0, 0.45);
+}
+
+.seasons-timeline-event-tick.equinox {
+    background: linear-gradient(to top, rgba(100, 149, 237, 0.95), rgba(135, 180, 255, 0.45));
+    box-shadow: 0 0 6px rgba(100, 149, 237, 0.4);
+}
+
+.seasons-timeline-indicator {
+    position: absolute;
+    top: 23px;
+    width: 4px;
+    height: 34px;
+    background: #fff;
+    border-radius: 2px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+    z-index: 10;
+}
+
+/* ============================================
+   LOCATION INFO
+   ============================================ */
+.location-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    row-gap: 6px;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.location-icon {
+    font-size: 1.2rem;
+}
+
+.location-text {
+    color: #d4af37;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.location-name-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.location-map-btn {
+    appearance: none;
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.14);
+    color: rgba(255, 248, 231, 0.95);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-radius: 999px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.location-map-btn:hover,
+.location-map-btn:focus-visible {
+    background: rgba(212, 175, 55, 0.24);
+    border-color: rgba(247, 220, 137, 0.85);
+    outline: none;
+}
+
+.location-map-btn:active {
+    transform: translateY(1px);
+}
+
+.location-coords {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    font-family: 'Courier New', monospace;
+}
+
+.location-map-panel {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(11, 18, 30, 0.86), rgba(8, 14, 24, 0.78));
+    border: 1px solid rgba(122, 168, 220, 0.24);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+.location-map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.location-map-header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    color: rgba(227, 236, 246, 0.95);
+}
+
+.location-map-close {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.92);
+    border-radius: 8px;
+    padding: 4px 9px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.location-map-close:hover,
+.location-map-close:focus-visible {
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
+}
+
+.location-map-meta {
+    margin-top: 8px;
+    color: rgba(225, 236, 251, 0.9);
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+}
+
+.location-map-legend {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    color: rgba(233, 242, 252, 0.9);
+    font-size: 0.78rem;
+}
+
+.location-map-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.location-map-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+.location-map-dot.is-current {
+    background: #1d8ff2;
+}
+
+.location-map-dot.is-marine {
+    background: #e08f2a;
+}
+
+.location-map-canvas {
+    margin-top: 10px;
+    width: 100%;
+    height: min(340px, 52vh);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.location-map-footnote {
+    margin-top: 7px;
+    color: rgba(193, 211, 231, 0.7);
+    font-size: 0.74rem;
+    line-height: 1.35;
+}
+
+@media (max-width: 640px) {
+    .location-name-row {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .location-map-canvas {
+        height: min(290px, 48vh);
+    }
+}
+
+/* ============================================
+   24-HOUR CLOCK WITH DAY/NIGHT
+   ============================================ */
+.clock-24h {
+    position: relative;
+    overflow: visible;
+}
+
+.daynight-arc-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.clock-face-24h {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid #c0c0c0;
+    box-shadow: 
+        0 0 0 4px #a0a0a0,
+        0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.hour-24-label {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    z-index: 5;
+}
+
+.hour-24-label.major {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.hour-24-label.semi-major {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tick-24h {
+    position: absolute;
+    width: 1px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.4);
+    top: 8px;
+    left: 50%;
+    transform-origin: center 142px;
+    margin-left: -0.5px;
+}
+
+.tick-24h.major {
+    width: 2px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    margin-left: -1px;
+}
+
+.sun-marker {
+    position: absolute;
+    font-size: 16px;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-shadow: 0 0 8px rgba(255, 200, 50, 0.8);
+}
+
+.sun-marker.dawn {
+    color: #ff7f50;
+    font-size: 14px;
+    text-shadow: 0 0 6px rgba(255, 127, 80, 0.9);
+}
+
+.sun-marker.sunrise {
+    color: #ffa500;
+    font-size: 18px;
+}
+
+.sun-marker.sunset {
+    color: #ff6347;
+    font-size: 18px;
+}
+
+.sun-marker.dusk {
+    color: #ff7f50;
+    font-size: 14px;
+    text-shadow: 0 0 6px rgba(255, 127, 80, 0.9);
+}
+
+.sun-marker.noon {
+    color: #ffdb58;
+    font-size: 20px;
+}
+
+.sun-marker.midnight {
+    color: #a0c4ff;
+    font-size: 16px;
+    text-shadow: 0 0 6px rgba(160, 196, 255, 0.8);
+}
+
+.sun-marker.moonrise {
+    color: #e8e8d0;
+    font-size: 14px;
+    text-shadow: 0 0 6px rgba(232, 232, 208, 0.7);
+}
+
+.sun-marker.moonset {
+    color: #c0c0b0;
+    font-size: 14px;
+    text-shadow: 0 0 6px rgba(192, 192, 176, 0.7);
+}
+
+/* Time labels next to sun markers */
+.sun-time {
+    position: absolute;
+    font-size: 11px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-weight: 700;
+    transform: translate(-50%, -50%);
+    z-index: 12;
+    text-shadow: 
+        -1px -1px 0 #1a1a2e,
+        1px -1px 0 #1a1a2e,
+        -1px 1px 0 #1a1a2e,
+        1px 1px 0 #1a1a2e,
+        0 0 8px rgba(0, 0, 0, 0.9);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+.sun-time.dawn-time {
+    color: #ffd0a0;
+}
+
+.sun-time.sunrise-time {
+    color: #ffcc00;
+}
+
+.sun-time.sunset-time {
+    color: #ffa060;
+}
+
+.sun-time.dusk-time {
+    color: #ffd0a0;
+}
+
+.sun-time.noon-time {
+    color: #ffdb58;
+}
+
+.sun-time.asr-time {
+    color: #e8a040;
+}
+
+.sun-time.moonrise-time {
+    color: #e8e8d0;
+}
+
+.sun-time.moonset-time {
+    color: #c0c0b0;
+}
+
+/* Asr marker styling */
+.sun-marker.asr {
+    color: #e8a040;
+    font-size: 16px;
+    text-shadow: 0 0 6px rgba(232, 160, 64, 0.8);
+}
+
+/* Arabic prayer labels */
+.prayer-label {
+    position: absolute;
+    font-size: 10px;
+    font-family: 'Amiri', 'Traditional Arabic', 'Arabic Typesetting', serif;
+    font-weight: 600;
+    transform: translate(-50%, -50%);
+    z-index: 11;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 
+        0 0 4px rgba(0, 0, 0, 0.9),
+        0 0 8px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    direction: rtl;
+}
+
+.prayer-label.fajr {
+    color: #ffd0a0;
+}
+
+.prayer-label.shurooq {
+    color: #ffcc00;
+}
+
+.prayer-label.dhuhr {
+    color: #ffdb58;
+}
+
+.prayer-label.asr {
+    color: #e8a040;
+}
+
+.prayer-label.maghrib {
+    color: #ffa060;
+}
+
+.prayer-label.isha {
+    color: #c0a0ff;
+}
+
+.hour-hand-24 {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 6px;
+    height: 115px;
+    background: linear-gradient(to top, #d4af37, #f0d060);
+    margin-left: -3px;
+    transform-origin: bottom center;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+    z-index: 8;
+}
+
+.minute-hand-24 {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    width: 3px;
+    height: 75px;
+    background: linear-gradient(to top, #fff, #e0e0e0);
+    margin-left: -1.5px;
+    transform-origin: bottom center;
+    border-radius: 2px;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    z-index: 9;
+}
+
+/* Inner minute track */
+.minute-track-24h {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 160px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: linear-gradient(135deg, 
+        rgba(80, 80, 100, 0.4) 0%, 
+        rgba(40, 40, 60, 0.6) 50%,
+        rgba(80, 80, 100, 0.4) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.minute-tick-24h {
+    position: absolute;
+    width: 1px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.4);
+    top: 2px;
+    left: 50%;
+    transform-origin: center 78px;
+    margin-left: -0.5px;
+}
+
+.minute-tick-24h.major {
+    width: 2px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    margin-left: -1px;
+}
+
+.clock-center-24 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: linear-gradient(145deg, #d4af37, #b8960c);
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+}
+
+/* Yearly extent lines (solstice boundaries) */
+.yearly-extent {
+    stroke-linecap: round;
+    opacity: 0.7;
+}
+
+.yearly-extent.winter {
+    stroke: #6af;
+}
+
+.yearly-extent.summer {
+    stroke: #fa0;
+}
+
+/* Season extent labels */
+.season-extent-label {
+    position: absolute;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 4;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.season-extent-label.summer {
+    color: #fa0;
+}
+
+.season-extent-label.winter {
+    color: #6af;
+}
+
+.night-arc {
+    fill: #0a1628;
+}
+
+.day-arc {
+    fill: #87ceeb;
+}
+
+.dawn-arc,
+.dusk-arc {
+    fill: #ff7f50;
+}
+
+/* ============================================
+   PROPORTIONAL DAY/NIGHT CLOCKS
+   ============================================ */
+.proportional-clock {
+    position: relative;
+    overflow: visible;
+}
+
+.proportional-arc-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.proportional-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid #c0c0c0;
+}
+
+/* Degree labels */
+.degree-label {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.8);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    z-index: 5;
+    text-shadow: 
+        1px 1px 0 rgba(255, 255, 255, 0.8),
+        -1px -1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.degree-label.night {
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 
+        1px 1px 0 rgba(0, 0, 0, 0.8),
+        -1px -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* PI labels */
+.pi-label {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.6);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-style: italic;
+    z-index: 5;
+}
+
+.pi-label.night {
+    color: rgba(200, 200, 255, 0.8);
+}
+
+/* Degree tick marks */
+.degree-tick {
+    position: absolute;
+    width: 2px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    top: 8px;
+    left: 50%;
+    transform-origin: center 142px;
+    margin-left: -1px;
+}
+
+.degree-tick.major {
+    width: 3px;
+    height: 18px;
+    background: rgba(0, 0, 0, 0.7);
+    margin-left: -1.5px;
+}
+
+.degree-tick.minor {
+    width: 1px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    margin-left: -0.5px;
+}
+
+.degree-tick.night {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.degree-tick.major.night {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.degree-tick.minor.night {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Sun/Moon markers for proportional clocks */
+.prop-sun-marker,
+.prop-moon-marker {
+    position: absolute;
+    font-size: 16px;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-shadow: 0 0 8px rgba(255, 200, 50, 0.8);
+    white-space: nowrap;
+}
+
+.prop-sun-marker.sunrise {
+    color: #ffa500;
+    font-size: 14px;
+}
+
+.prop-sun-marker.noon {
+    color: #ffdb58;
+    font-size: 22px;
+    text-shadow: 0 0 12px rgba(255, 200, 50, 1);
+}
+
+.prop-sun-marker.sunset {
+    color: #ff6347;
+    font-size: 14px;
+}
+
+.prop-moon-marker.sunset {
+    color: #ff6347;
+    font-size: 14px;
+}
+
+.prop-moon-marker.midnight {
+    color: #c0d0ff;
+    font-size: 22px;
+    text-shadow: 0 0 12px rgba(180, 200, 255, 0.8);
+}
+
+.prop-moon-marker.sunrise {
+    color: #ffa500;
+    font-size: 14px;
+}
+
+.prop-moon-marker.dawn {
+    color: #ffb060;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(255, 180, 100, 0.8);
+}
+
+.prop-moon-marker.dusk-end {
+    color: #6080ff;
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(100, 140, 255, 0.8);
+}
+
+.prop-sun-marker.dawn {
+    color: #ffb060;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(255, 180, 100, 0.8);
+}
+
+.prop-sun-marker.dusk {
+    color: #ffb060;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(255, 180, 100, 0.8);
+}
+
+.prop-moon-marker.dusk {
+    color: #6080ff;
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(100, 140, 255, 0.8);
+}
+
+/* Period labels (start/end/middle) */
+.period-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(0, 0, 0, 0.7);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 6;
+    white-space: nowrap;
+}
+
+.period-label.night {
+    color: rgba(200, 200, 255, 0.9);
+}
+
+.period-label.start {
+    top: -25px;
+}
+
+.period-label.end {
+    top: 320px;
+}
+
+.period-label.middle {
+    font-size: 8px;
+}
+
+/* Twilight labels */
+.twilight-label {
+    position: absolute;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(50, 30, 20, 0.8);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 6;
+}
+
+.twilight-label.night {
+    color: rgba(255, 180, 120, 0.9);
+}
+
+/* Proportional time display */
+.prop-time-display {
+    position: absolute;
+    top: 62%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: 700;
+    color: rgba(30, 30, 80, 0.95);
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    z-index: 10;
+    line-height: 1.2;
+}
+
+.prop-time-display.night {
+    color: rgba(200, 200, 255, 0.95);
+}
+
+.prop-time-display .pi-small {
+    font-size: 14px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.prop-time-display .waiting {
+    font-size: 14px;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+/* Proportional hands */
+.proportional-hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    border-radius: 3px;
+    z-index: 8;
+}
+
+.proportional-hand.day-hand {
+    width: 6px;
+    height: 100px;
+    background: linear-gradient(to top, #ff8c00, #ffd700);
+    margin-left: -3px;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.6);
+}
+
+.proportional-hand.night-hand {
+    width: 6px;
+    height: 100px;
+    background: linear-gradient(to top, #4a5080, #8090c0);
+    margin-left: -3px;
+    box-shadow: 0 0 10px rgba(100, 120, 180, 0.6);
+}
+
+/* Proportional center dots */
+.prop-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.prop-center.day-center {
+    background: linear-gradient(145deg, #ffd700, #ff8c00);
+    box-shadow: 0 0 12px rgba(255, 180, 0, 0.7);
+}
+
+.prop-center.night-center {
+    background: linear-gradient(145deg, #8090c0, #4a5080);
+    box-shadow: 0 0 12px rgba(100, 120, 180, 0.7);
+}
+
+/* Day clock specific */
+.day-proportional-clock .twilight-bg {
+    fill: #ffb070;
+}
+
+.day-proportional-clock .prop-day-arc {
+    fill: #87ceeb;
+}
+
+.day-proportional-clock .prop-dawn-arc,
+.day-proportional-clock .prop-dusk-arc {
+    fill: #ff9060;
+}
+
+/* Night clock specific */
+.night-proportional-clock .night-bg {
+    fill: #0a1628;
+}
+
+.night-proportional-clock .prop-night-arc {
+    fill: #0a1628;
+}
+
+.night-proportional-clock .prop-dawn-arc,
+.night-proportional-clock .prop-dusk-arc {
+    fill: #ff7f50;
+}
+
+/* ============================================
+   TIME SLIDER PANEL
+   ============================================ */
+.time-slider-panel {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 20px;
+}
+
+.time-slider-panel h2 {
+    color: #d4af37;
+}
+
+.sliders-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.slider-control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 280px;
+    flex: 1;
+    max-width: 380px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.slider-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.slider-date-display {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 1.1rem;
+    color: #87ceeb;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.slider-offset-display {
+    font-size: 0.75rem;
+    color: #d4af37;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: center;
+}
+
+.slider-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Custom range slider styling */
+.time-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, 
+        rgba(135, 206, 235, 0.3) 0%, 
+        rgba(212, 175, 55, 0.5) 50%, 
+        rgba(135, 206, 235, 0.3) 100%
+    );
+    outline: none;
+    cursor: pointer;
+}
+
+.time-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #d4af37, #a08030);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.15s ease;
+}
+
+.time-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.time-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #d4af37, #a08030);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.15s ease;
+}
+
+.time-slider::-moz-range-thumb:hover {
+    transform: scale(1.15);
+}
+
+.time-slider::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, 
+        rgba(135, 206, 235, 0.3) 0%, 
+        rgba(212, 175, 55, 0.5) 50%, 
+        rgba(135, 206, 235, 0.3) 100%
+    );
+}
+
+.slider-reset-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.slider-reset-btn:hover {
+    background: rgba(212, 175, 55, 0.3);
+    border-color: #d4af37;
+    color: #d4af37;
+    transform: rotate(-90deg);
+}
+
+/* Responsive adjustments for sliders */
+@media (max-width: 900px) {
+    .sliders-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .slider-control {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .time-slider-panel {
+        padding: 10px 15px;
+    }
+    
+    .slider-control {
+        padding: 10px;
+        min-width: unset;
+    }
+    
+    .slider-date-display {
+        font-size: 0.95rem;
+    }
+}
+/* ============================================
+   HIJRI (ISLAMIC LUNAR) CALENDAR CLOCK
+   ============================================ */
+.hijri-clock {
+    position: relative;
+}
+
+.hijri-face {
+    background: transparent;
+}
+
+.hijri-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.hijri-day {
+    font-size: 42px;
+    font-weight: 300;
+    color: #d4af37;
+    line-height: 1;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.hijri-month {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.hijri-year {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 2px;
+    margin-top: 2px;
+}
+
+/* Small moon phase indicator */
+.hijri-moon-indicator {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+}
+
+.hijri-moon-sphere {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f4f4f4 0%, #e0e0e0 50%, #c0c0c0 100%);
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.hijri-moon-shadow {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #0a1628;
+    border-radius: 50%;
+    transition: transform 0.5s ease;
+}
+
+/* Hijri sun event markers */
+.hijri-sun-marker {
+    position: absolute;
+    font-size: 16px;
+    transform: translate(-50%, -50%);
+    z-index: 15;
+    pointer-events: auto;
+    cursor: help;
+}
+
+.hijri-sun-marker.dawn {
+    color: #ff9060;
+    text-shadow: 0 0 8px rgba(255, 144, 96, 0.9);
+}
+
+.hijri-sun-marker.sunrise {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.9);
+}
+
+.hijri-sun-marker.noon {
+    color: #fff700;
+    font-size: 18px;
+    text-shadow: 0 0 12px rgba(255, 247, 0, 1);
+}
+
+.hijri-sun-marker.sunset {
+    color: #ff8c00;
+    text-shadow: 0 0 10px rgba(255, 140, 0, 0.9);
+}
+
+.hijri-sun-marker.dusk {
+    color: #ff7050;
+    text-shadow: 0 0 8px rgba(255, 112, 80, 0.9);
+}
+
+.hijri-sun-marker.midnight {
+    color: #8090c0;
+    font-size: 18px;
+    text-shadow: 0 0 10px rgba(128, 144, 192, 0.9);
+}
+
+.hijri-clock {
+    overflow: visible !important;
+}
+
+/* ============================================
+   ASTRONOMICAL SUMMARY SECTION
+   ============================================ */
+.astronomical-summary {
+    width: 100%;
+}
+
+.astronomical-summary h2 {
+    text-align: center;
+    color: #d4af37;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+@media (max-width: 1200px) {
+    .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.summary-card h3 {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
+}
+
+/* Moon Phases Card */
+.moon-phases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.phase-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.phase-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.phase-symbol {
+    font-size: 1.4rem;
+    width: 30px;
+    text-align: center;
+}
+
+.phase-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.phase-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.phase-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.phase-times {
+    color: #d4af37;
+    font-size: 0.7rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Equinox Card */
+.equinox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.equinox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.equinox-item.solstice {
+    border-left: 3px solid #ff9800;
+}
+
+.equinox-item.equinox {
+    border-left: 3px solid #4caf50;
+}
+
+.event-symbol {
+    font-size: 1.2rem;
+    width: 25px;
+    text-align: center;
+}
+
+.event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.event-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.event-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Equal 12h/12h Card */
+.equal12h-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.equal12h-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border-left: 3px solid #2196f3;
+}
+
+.equal-symbol {
+    font-size: 1.2rem;
+    width: 25px;
+    text-align: center;
+    color: #2196f3;
+}
+
+.equal-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.equal-desc {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.equal-date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Seasons Card */
+.seasons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.season-item {
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+}
+
+.season-item:first-child {
+    border-left: 3px solid #64b5f6; /* Winter blue */
+}
+
+.season-item:nth-child(2) {
+    border-left: 3px solid #81c784; /* Spring green */
+}
+
+.season-item:nth-child(3) {
+    border-left: 3px solid #ffb74d; /* Summer orange */
+}
+
+.season-item:nth-child(4) {
+    border-left: 3px solid #a1887f; /* Autumn brown */
+}
+
+.season-symbol {
+    font-size: 1.1rem;
+    margin-right: 8px;
+}
+
+.season-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.season-name {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.8rem;
+    font-weight: 500;
+    min-width: 60px;
+}
+
+.season-days {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.season-bar {
+    margin-top: 6px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.season-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.season-item:first-child .season-bar-fill {
+    background: linear-gradient(90deg, #64b5f6, #90caf9);
+}
+
+.season-item:nth-child(2) .season-bar-fill {
+    background: linear-gradient(90deg, #81c784, #a5d6a7);
+}
+
+.season-item:nth-child(3) .season-bar-fill {
+    background: linear-gradient(90deg, #ffb74d, #ffd54f);
+}
+
+.season-item:nth-child(4) .season-bar-fill {
+    background: linear-gradient(90deg, #a1887f, #bcaaa4);
+}
+
+/* —— Weather (Open-Meteo + Chart.js) —— */
+.weather-section {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    padding-bottom: 8px;
+}
+
+.weather-section-heading {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.weather-section-intro {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.weather-current {
+    width: 100%;
+    padding: 14px 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.weather-current-title {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(212, 175, 55, 0.95);
+}
+
+.weather-current-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px 14px;
+    align-items: start;
+}
+
+.weather-current-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.weather-current-cell-wide {
+    grid-column: 1 / -1;
+}
+
+.weather-current-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.weather-current-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.25;
+    word-break: break-word;
+}
+
+.weather-current-meta {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.weather-date-input {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.weather-status {
+    font-size: 0.8rem;
+    color: rgba(212, 175, 55, 0.95);
+    min-height: 1.2em;
+}
+
+.weather-tabbed.TabbedPanel {
+    min-height: 420px;
+    max-height: min(78vh, 900px);
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+}
+
+.weather-tabbed .Tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 8px 8px 0;
+    overflow-x: auto;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.weather-tabbed .Tab {
+    flex: 0 0 auto;
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    user-select: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.weather-tabbed .Tab:hover {
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.weather-tabbed .Tab.selected {
+    color: #d4af37;
+    background: rgba(212, 175, 55, 0.12);
+}
+
+.weather-tabbed .Panels {
+    padding: 12px 10px 16px;
+}
+
+.weather-tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.weather-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.weather-toolbar-wrap {
+    align-items: center;
+}
+
+.weather-meta {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.4;
+}
+
+.weather-btn {
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    background: rgba(212, 175, 55, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.weather-btn:hover {
+    background: rgba(212, 175, 55, 0.22);
+    border-color: rgba(212, 175, 55, 0.75);
+}
+
+.weather-btn:focus-visible {
+    outline: 2px solid #d4af37;
+    outline-offset: 2px;
+}
+
+.weather-select {
+    font-family: inherit;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.weather-range-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.weather-chart-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 8px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.weather-chart-title {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.weather-chart-inner {
+    position: relative;
+    width: 100%;
+    height: min(280px, 42vw);
+    min-height: 220px;
+}
+
+.weather-chart-inner.weather-chart-inner-wave {
+    height: min(380px, 52vw);
+    min-height: 300px;
+}
+
+.weather-wave-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.weather-wave-target-wrap {
+    flex: 0 0 86px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.weather-wave-target-control {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.72);
+    user-select: none;
+}
+
+.weather-wave-target-label {
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.weather-wave-target-input {
+    width: 74px;
+    padding: 5px 6px;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.84rem;
+}
+
+.weather-wave-target-input:focus-visible {
+    outline: 2px solid rgba(255, 138, 101, 0.9);
+    outline-offset: 1px;
+}
+
+.weather-wave-target-unit {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.58);
+}
+
+.weather-wave-plot {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+.weather-wave-plot canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+@media (max-width: 760px) {
+    .weather-chart-inner.weather-chart-inner-wave {
+        height: min(340px, 78vw);
+        min-height: 260px;
+    }
+
+    .weather-wave-layout {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .weather-wave-target-wrap {
+        flex: 0 0 auto;
+    }
+
+    .weather-wave-target-control {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .weather-wave-target-input {
+        width: 84px;
+    }
+}
+
+.weather-tide-summary {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+    padding: 2px 2px 4px;
+}
+
+.weather-tide-events-wrap {
+    max-height: min(220px, 36vh);
+    overflow-y: auto;
+    padding: 8px 10px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.22);
+}
+
+.weather-tide-events {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.76rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.82);
+}
+
+.weather-tide-events li {
+    margin-bottom: 5px;
+}
+
+.weather-tide-events li:last-child {
+    margin-bottom: 0;
+}
+
+
+.FloatingPanel {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--windowbar-surface) 88%, transparent 12%),
+    var(--windowbar-surface-strong)
+  );
+  -webkit-backdrop-filter: var(--windowbar-blur);
+  backdrop-filter: var(--windowbar-blur);
+  border: 1px solid var(--windowbar-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--windowbar-shadow);
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: calc(100% - var(--sidebar-width) - var(--phi-0-5));
+  max-height: calc(100vh - var(--headerbar-height) - var(--phi-1));
+  min-height: 0;
+  min-width: min(20vw, 280px);
+  overflow: hidden;
+  position: absolute;
+  transition: all var(--transition-medium);
+  z-index: 12;
+}
+
+.FloatingPanel::before {
+  border-radius: inherit;
+  border-top: 1px solid var(--windowbar-highlight);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.FloatingPanel-header {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--windowbar-surface-strong) 55%, transparent 45%),
+    transparent
+  );
+  border-bottom: 1px solid var(--windowbar-border);
+    display: flex;
+    flex-direction: row;
+
+}
+
+.Row {
+  display: flex;
+
+  flex-direction: row;
+}
+
+.FloatingPanel-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: 0;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+}
+
+.FloatingPanel-content:has(> .TabPanel) {
+  overflow: hidden;
+}
+
+.FloatingPanel-content > .TabPanel {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  max-width: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.FloatingPanel.maximized {
+  height: 100% !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+}
+
+.FloatingPanel.minimized {
+  height: 30px !important;
+}
+
+.FloatingPanel.minimized .card__content {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
