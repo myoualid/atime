@@ -4,11 +4,12 @@
  * rules in `styles.css` (`.app-footer`, `.app-footer-inner`, `.app-footer-block`,
  * `.app-footer-location`, `.app-footer-kv`, `.app-footer-phase`).
  *
- * Returns { el, setLocation, setTime, setTemp, setWind, setPhase }.
+ * Returns { el, mapButton, setLocation, setTime, setTemp, setWind, setPhase }.
  */
 export function createAppFooter(opts = {}) {
     const {
         showLocation = true,
+        showMap = false,
         showTime = true,
         showTemp = true,
         showWind = true,
@@ -28,6 +29,7 @@ export function createAppFooter(opts = {}) {
                 <span class="location-icon" aria-hidden="true">📍</span>
                 <span class="location-text">—</span>
                 <span class="location-coords"></span>
+                ${showMap ? '<button class="location-map-btn" type="button" aria-expanded="false">Map</button>' : ''}
             </div>
         `);
     }
@@ -77,6 +79,7 @@ export function createAppFooter(opts = {}) {
 
     const locText = el.querySelector('.app-footer-location .location-text');
     const locCoords = el.querySelector('.app-footer-location .location-coords');
+    const mapButton = el.querySelector('.location-map-btn');
     const timeEl = el.querySelector('.footer-time');
     const tempEl = el.querySelector('.footer-temp');
     const windEl = el.querySelector('.footer-wind');
@@ -86,6 +89,7 @@ export function createAppFooter(opts = {}) {
 
     return {
         el,
+        mapButton,
         setLocation(name, lat, lon) {
             if (locText) locText.textContent = name || '—';
             if (locCoords) {
@@ -95,6 +99,18 @@ export function createAppFooter(opts = {}) {
             }
         },
         setTime(text) { if (timeEl) timeEl.textContent = text ?? '--:--:--'; },
+        startClock() {
+            const tick = () => {
+                this.setTime(new Date().toLocaleTimeString(undefined, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                }));
+            };
+            tick();
+            const id = setInterval(tick, 1000);
+            return () => clearInterval(id);
+        },
         setTemp(text) { if (tempEl) tempEl.textContent = text ?? '—'; },
         setWind(text) { if (windEl) windEl.textContent = text ?? '—'; },
         /**

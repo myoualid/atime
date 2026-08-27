@@ -1,0 +1,260 @@
+/* Shared app chrome: ribbon header, main column, floating minimize control. */
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin: 0 auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    gap: 0;
+    position: relative;
+}
+
+.app-main-row {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    gap: 0;
+}
+
+.app-sidebar {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 48%;
+    min-width: min(100%, 280px);
+    max-width: min(100%, 720px);
+    min-height: 0;
+    overflow: hidden;
+    padding: 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.18);
+}
+
+.app-sidebar:empty,
+.app-sidebar[hidden] {
+    display: none;
+    flex: 0 0 0;
+    min-width: 0;
+    max-width: 0;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+}
+
+.app-sidebar > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+.app-sidebar.app-sidebar-nav {
+    flex: 0 0 220px;
+    min-width: 180px;
+    max-width: 260px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.app-sidebar.app-sidebar-nav > * {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+    .app-main-row:has(.app-sidebar:not(:empty):not([hidden])) {
+        flex-direction: column;
+    }
+
+    .app-sidebar:not(:empty):not([hidden]) {
+        flex: 0 1 auto;
+        max-width: none;
+        max-height: 46%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .app-sidebar.app-sidebar-nav:not(:empty):not([hidden]) {
+        max-height: none;
+        flex-direction: column;
+    }
+}
+
+.Panel.app-main-panel,
+.app-main-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+    padding: 7px 7px;
+    width: auto;
+    gap: 0;
+}
+
+.app-panel-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+.app-section {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 24px;
+}
+
+.app-section.is-active {
+    display: flex;
+}
+
+.app-section > * {
+    max-width: 100%;
+}
+
+/* —— Ribbon menu (header) —— */
+
+.app-ribbon-menu {
+    --dui-color-accent: #d4af37;
+    --dui-color-text: rgba(255, 255, 255, 0.92);
+    --dui-color-text-muted: rgba(255, 255, 255, 0.62);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    padding-right: 52px;
+    background: rgba(0, 0, 0, 0.32);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.app-header-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: var(--headerbar-height, 36px);
+    padding: 0 12px;
+}
+
+.app-header-title,
+.app-header-title:visited {
+    color: #d4af37;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-size: 0.82rem;
+}
+
+.app-header-title:hover,
+.app-header-title:focus-visible {
+    color: #f0d060;
+    outline: none;
+}
+
+.app-ribbon-menu .RibbonBar {
+    align-items: stretch;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    width: 100%;
+}
+
+.app-ribbon-menu .RibbonBar::-webkit-scrollbar {
+    display: none;
+}
+
+.app-section-ribbon {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.app-section-ribbon .RibbonButton {
+    min-width: 64px;
+    padding: 4px 10px 3px;
+}
+
+.app-section-ribbon .RibbonButton .Icon,
+.app-section-ribbon .RibbonButton .material-symbols-outlined {
+    font-size: 18px;
+    height: 18px;
+    line-height: 18px;
+}
+
+.app-shell.is-ribbon-minimized .app-ribbon-menu {
+    display: none;
+}
+
+button.Button.app-ribbon-toggle,
+.app-ribbon-toggle {
+    position: fixed;
+    top: 8px;
+    right: 8px;
+    z-index: 6000;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    background: rgba(10, 12, 16, 0.72);
+    color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+}
+
+button.Button.app-ribbon-toggle:hover,
+button.Button.app-ribbon-toggle:focus-visible,
+.app-ribbon-toggle:hover,
+.app-ribbon-toggle:focus-visible {
+    background: rgba(212, 175, 55, 0.28);
+    border-color: rgba(212, 175, 55, 0.7);
+    outline: none;
+}
+
+.app-ribbon-toggle .Icon,
+.app-ribbon-toggle .material-symbols-outlined {
+    font-size: 22px;
+    line-height: 1;
+    color: inherit;
+}
+
+.app-hub-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 42rem;
+    padding: 28px 18px 40px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.app-hub-welcome h1 {
+    margin: 0;
+}
+
+.app-hub-welcome p {
+    margin: 0;
+    line-height: 1.5;
+    max-width: 70ch;
+}

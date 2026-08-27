@@ -1,5 +1,7 @@
+@import "../../vendor/drawui/drawui.min.css";
 @import "../../fonts/material-symbols-outlined.css";
 @import "../components/appFooter.css";
+@import "../components/appShell.css";
 
 :root {
 
@@ -213,6 +215,16 @@ body.app-time {
         linear-gradient(135deg, #0d1a2b 0%, #12314a 100%);
 }
 
+body.app-hub {
+    background:
+        radial-gradient(circle at 15% 15%, rgba(246, 196, 83, 0.25), transparent 42%),
+        radial-gradient(circle at 88% 80%, rgba(100, 212, 214, 0.18), transparent 48%),
+        linear-gradient(145deg, #081b20, #0e2a33);
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 0;
+}
+
 body.app-local-environment {
     background:
         radial-gradient(circle at 15% 15%, rgba(180, 125, 255, 0.22), transparent 42%),
@@ -222,6 +234,7 @@ body.app-local-environment {
 
 /* Make tab panels scrollable (master.css sets overflow:hidden) */
 .TabbedPanel,
+.TabView,
 .inner-tabbed-panel {
     display: flex;
     flex-direction: column;
@@ -230,7 +243,9 @@ body.app-local-environment {
 }
 
 .TabbedPanel .Panels,
-.inner-tabbed-panel .Panels {
+.TabView .TabView-content,
+.inner-tabbed-panel .Panels,
+.inner-tabbed-panel .TabView-content {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -249,131 +264,7 @@ body.app-local-environment {
     overflow: visible;
 }
 
-/* —— App shell: column = [ sidebar + main ] + full-width footer —— */
-.app-shell {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    margin: 0 auto;
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: 0;
-    gap: 0;
-}
-
-.app-main-row {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: 0;
-    gap: 0;
-}
-
-.app-side-nav {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    width: 64px;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(0, 0, 0, 0.22);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.app-nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-height: 48px;
-    padding: 8px 4px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.72);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: background 0.15s ease, color 0.15s ease;
-}
-
-a.app-nav-btn,
-a.app-nav-btn:hover,
-a.app-nav-btn:focus,
-a.app-nav-btn:visited {
-    text-decoration: none;
-}
-
-.app-nav-btn:hover {
-    color: rgba(255, 255, 255, 0.95);
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.app-nav-btn:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 2px;
-}
-
-.app-nav-btn[aria-pressed="true"] {
-    background: rgba(212, 175, 55, 0.14);
-    color: #d4af37;
-}
-
-.app-nav-icon {
-    font-size: 1.35rem;
-    line-height: 1;
-}
-
-.app-nav-label {
-    display: block;
-    text-align: center;
-    line-height: 1.15;
-    max-width: 100%;
-    word-break: break-word;
-}
-
-.Panel.app-main-panel {
-    flex: 1;
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-    align-items: stretch;
-    padding: 7px 7px;
-    width: auto;
-    gap: 0;
-}
-
-.app-panel-scroll {
-    flex: 1;
-    min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
-}
-
-.app-section {
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    gap: 24px;
-}
-
-.app-section.is-active {
-    display: flex;
-}
-
-.app-section > * {
-    max-width: 100%;
-}
+/* App chrome (ribbon header, main column) lives in appShell.css */
 
 .moon-clocks-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -405,44 +296,6 @@ a.app-nav-btn:visited {
     .moon-clocks-grid,
     .year-month-grid {
         grid-template-columns: 1fr;
-    }
-
-    .app-nav-label {
-        display: none;
-    }
-
-    .app-nav-btn {
-        min-height: 52px;
-    }
-}
-
-@media (min-width: 640px) {
-    .app-side-nav {
-        width: 84px;
-    }
-
-    .app-nav-btn {
-        font-size: 0.68rem;
-    }
-}
-
-@media (min-width: 900px) {
-    .app-side-nav {
-        width: 200px;
-    }
-
-    .app-nav-btn {
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 12px;
-        min-height: 48px;
-        padding: 12px 14px;
-        font-size: 0.8rem;
-    }
-
-    .app-nav-label {
-        text-align: left;
     }
 }
 
@@ -1830,6 +1683,16 @@ h2 {
 
 .location-map-btn:active {
     transform: translateY(1px);
+}
+
+.location-map-btn.is-open,
+.location-map-btn[aria-expanded="true"] {
+    background: rgba(212, 175, 55, 0.32);
+    border-color: rgba(247, 220, 137, 0.95);
+}
+
+.app-footer .location-map-btn {
+    margin-left: 2px;
 }
 
 .location-coords {
@@ -3547,16 +3410,151 @@ h2 {
     color: rgba(255, 255, 255, 0.82);
 }
 
-.weather-tide-events li {
+.weather-tide-events-item {
+    display: list-item;
+    list-style: disc;
     margin-bottom: 5px;
 }
 
-.weather-tide-events li:last-child {
+.weather-tide-events-item:last-child {
     margin-bottom: 0;
 }
 
+/* —— Local Environment sidebar controls + general stack —— */
+.env-sidebar-heading {
+    margin: 4px 6px 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
 
-.FloatingPanel {
+.env-controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    min-width: 0;
+}
+
+.env-controls-panel[hidden] {
+    display: none;
+}
+
+.env-control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.env-control-group-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0 2px;
+}
+
+.env-controls-panel .weather-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.env-controls-panel .weather-btn {
+    width: 100%;
+}
+
+.env-controls-panel .weather-date-input,
+.env-controls-panel .weather-select {
+    width: 100%;
+    min-width: 0;
+}
+
+.env-layer-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.env-layer-toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.78);
+    cursor: pointer;
+    user-select: none;
+}
+
+.env-layer-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.env-layer-toggle input {
+    accent-color: #d4af37;
+}
+
+.env-general-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+}
+
+.env-general-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.env-general-block[hidden] {
+    display: none;
+}
+
+.env-general-block-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.weather-chart-inner.env-chart-compact {
+    height: min(210px, 34vw);
+    min-height: 170px;
+}
+
+@media (max-width: 720px) {
+    .env-controls-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 12px 16px;
+    }
+
+    .env-control-group {
+        flex: 1 1 140px;
+        min-width: 140px;
+    }
+
+    .env-layer-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+}
+
+
+.FloatingPanel,
+.FloatingWindow {
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--windowbar-surface) 88%, transparent 12%),
@@ -3580,7 +3578,8 @@ h2 {
   z-index: 12;
 }
 
-.FloatingPanel::before {
+.FloatingPanel::before,
+.FloatingWindow::before {
   border-radius: inherit;
   border-top: 1px solid var(--windowbar-highlight);
   content: "";
@@ -3590,7 +3589,8 @@ h2 {
   z-index: 1;
 }
 
-.FloatingPanel-header {
+.FloatingPanel-header,
+.FloatingWindow > .Header {
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--windowbar-surface-strong) 55%, transparent 45%),
@@ -3608,7 +3608,8 @@ h2 {
   flex-direction: row;
 }
 
-.FloatingPanel-content {
+.FloatingPanel-content,
+.FloatingWindow-content {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -3618,11 +3619,13 @@ h2 {
   position: relative;
 }
 
-.FloatingPanel-content:has(> .TabPanel) {
+.FloatingPanel-content:has(> .TabPanel),
+.FloatingWindow-content:has(> .TabPanel) {
   overflow: hidden;
 }
 
-.FloatingPanel-content > .TabPanel {
+.FloatingPanel-content > .TabPanel,
+.FloatingWindow-content > .TabPanel {
   box-sizing: border-box;
   display: flex;
   flex: 1 1 0%;
@@ -3634,7 +3637,8 @@ h2 {
   width: 100%;
 }
 
-.FloatingPanel.maximized {
+.FloatingPanel.maximized,
+.FloatingWindow.maximized {
   height: 100% !important;
   left: 0 !important;
   top: 0 !important;
@@ -3642,11 +3646,13 @@ h2 {
   z-index: 9999 !important;
 }
 
-.FloatingPanel.minimized {
+.FloatingPanel.minimized,
+.FloatingWindow.minimized {
   height: 30px !important;
 }
 
-.FloatingPanel.minimized .card__content {
+.FloatingPanel.minimized .card__content,
+.FloatingWindow.minimized .card__content {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;

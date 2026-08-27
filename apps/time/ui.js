@@ -1,8 +1,8 @@
 import { DrawUI } from '../../shared/drawUI/index.js';
 import * as tools from '../../shared/tools/index.js';
 import { staticData } from './data.js';
-import { fetchJson, forecastCurrentOnlyUrl } from '../local-environment/openMeteo.js';
-import { createAppFooter } from '../../shared/components/appFooter.js';
+import { createAppShell } from '../../shared/components/appShell.js';
+import { refreshFooterWeather } from '../../shared/components/footerWeather.js';
 
 import {
     createDayClock,
@@ -1447,20 +1447,41 @@ function createSolarSeasonsClock(container, {core, ops, services}) {
 export async function create({core, ops, services}) {
     await services.LocationService.requestLocation();
 
-    const appShell = DrawUI.div();
-    appShell.setClass('app-shell');
+    const navSpec = [
+        { id: 'section-now', label: 'Now', icon: 'schedule' },
+        { id: 'section-moon', label: 'Moon', icon: 'dark_mode' },
+        { id: 'section-seasons', label: 'Seasons', icon: 'wb_sunny' },
+        { id: 'section-year-month', label: 'Year', icon: 'calendar_month' },
+        { id: 'section-clocks', label: 'Clocks', icon: 'watch' },
+        { id: 'section-phenomena', label: 'Phenomena', icon: 'auto_awesome' },
+        { id: 'section-sim', label: 'Travel', icon: 'history' },
+    ];
 
-    const sideNav = DrawUI.div();
-    sideNav.setClass('app-side-nav');
-    sideNav.dom.setAttribute('role', 'navigation');
-    sideNav.dom.setAttribute('aria-label', 'App sections');
+    const sectionOrder = navSpec.map((spec) => spec.id);
+    /** @type {Record<string, { addClass: Function, removeClass: Function }>} */
+    const sectionEls = {};
 
-    const mainPanel = DrawUI.panel();
-    mainPanel.setId('main-panel');
-    mainPanel.addClass('app-main-panel');
-
-    const scrollInner = DrawUI.div();
-    scrollInner.setClass('app-panel-scroll');
+    const {
+        root: appShell,
+        scrollInner,
+        footer,
+        setSection,
+    } = createAppShell({
+        currentApp: 'time',
+        sections: navSpec,
+        footer: { showPhase: true },
+        clock: false,
+        onSection(sectionId) {
+            sectionOrder.forEach((id) => {
+                const el = sectionEls[id];
+                if (!el) return;
+                if (id === sectionId) el.addClass('is-active');
+                else el.removeClass('is-active');
+            });
+            scrollInner.dom.scrollTop = 0;
+        },
+        sectionNavLabel: 'Time sections',
+    });
 
     const locationInfo = DrawUI.div();
     locationInfo.setClass('location-info');
@@ -1807,10 +1828,8 @@ export async function create({core, ops, services}) {
     sectionSim.add(timeSliderPanel);
 
     scrollInner.add(sectionNow, sectionMoon, sectionSeasons, sectionYearMonth, sectionClocks, sectionPhenomena, sectionSim);
-    mainPanel.add(scrollInner);
 
-    const sectionOrder = ['section-now', 'section-moon', 'section-seasons', 'section-year-month', 'section-clocks', 'section-phenomena', 'section-sim'];
-    const sectionEls = {
+    Object.assign(sectionEls, {
         'section-now': sectionNow,
         'section-moon': sectionMoon,
         'section-seasons': sectionSeasons,
@@ -1818,76 +1837,8 @@ export async function create({core, ops, services}) {
         'section-clocks': sectionClocks,
         'section-phenomena': sectionPhenomena,
         'section-sim': sectionSim,
-    };
-
-    const navSpec = [
-        { id: 'section-now', label: 'Now', icon: '⌚' },
-        { id: 'section-moon', label: 'Moon', icon: '☽' },
-        { id: 'section-seasons', label: 'Seasons', icon: '◎' },
-        { id: 'section-year-month', label: 'Year & month', icon: '◴' },
-        { id: 'section-clocks', label: 'Clocks', icon: '◷' },
-        { id: 'section-phenomena', label: 'Phenomena', icon: '✦' },
-        { id: 'section-sim', label: 'Time travel', icon: '⟲' },
-    ];
-
-    const navButtons = [];
-
-    const appLinks = [
-        { href: '../../', label: 'Launcher', icon: '⌂' },
-        { href: '../food/', label: 'Food', icon: '☰' },
-        { href: '../local-environment/', label: 'Local', icon: '☁' },
-    ];
-
-    appLinks.forEach((linkSpec) => {
-        const link = document.createElement('a');
-        link.className = 'app-nav-btn';
-        link.href = linkSpec.href;
-        link.setAttribute('aria-label', linkSpec.label);
-        link.innerHTML = `<span class="app-nav-icon" aria-hidden="true">${linkSpec.icon}</span><span class="app-nav-label">${linkSpec.label}</span>`;
-        sideNav.dom.appendChild(link);
     });
 
-    const divider = document.createElement('div');
-    divider.style.height = '1px';
-    divider.style.margin = '4px 8px';
-    divider.style.background = 'rgba(255,255,255,0.12)';
-    sideNav.dom.appendChild(divider);
-
-    function activateSection(sectionId) {
-        sectionOrder.forEach((id) => {
-            const el = sectionEls[id];
-            if (id === sectionId) el.addClass('is-active');
-            else el.removeClass('is-active');
-        });
-        navButtons.forEach((btn) => {
-            const on = btn.dataset.section === sectionId;
-            btn.setAttribute('aria-pressed', String(on));
-            if (on) btn.setAttribute('aria-current', 'true');
-            else btn.removeAttribute('aria-current');
-        });
-        scrollInner.dom.scrollTop = 0;
-    }
-
-    navSpec.forEach((spec) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'app-nav-btn';
-        btn.dataset.section = spec.id;
-        btn.setAttribute('aria-label', spec.label);
-        btn.innerHTML = `<span class="app-nav-icon" aria-hidden="true">${spec.icon}</span><span class="app-nav-label">${spec.label}</span>`;
-        const initial = spec.id === 'section-now';
-        btn.setAttribute('aria-pressed', String(initial));
-        if (initial) btn.setAttribute('aria-current', 'true');
-        btn.addEventListener('click', () => activateSection(spec.id));
-        sideNav.dom.appendChild(btn);
-        navButtons.push(btn);
-    });
-
-    const mainRow = DrawUI.div();
-    mainRow.setClass('app-main-row');
-    mainRow.add(sideNav, mainPanel);
-
-    const footer = createAppFooter({ showPhase: true });
     footer.setLocation(
         services.LocationService.locationName,
         services.LocationService.latitude,
@@ -1897,35 +1848,16 @@ export async function create({core, ops, services}) {
     let lastFooterWeatherFetch = 0;
     const footerWeatherIntervalMs = 10 * 60 * 1000;
 
-    async function refreshFooterWeather() {
-        try {
-            const lat = services.LocationService.latitude;
-            const lon = services.LocationService.longitude;
-            const url = forecastCurrentOnlyUrl(lat, lon, 'auto');
-            const j = await fetchJson(url);
-            if (j?.error || !j?.current) return;
-            const u = j.current_units ?? {};
-            const t = j.current.temperature_2m;
-            const w = j.current.wind_speed_10m;
-            footer.setTemp(
-                t != null && Number.isFinite(t)
-                    ? `${t}${u.temperature_2m || '°C'}`
-                    : '—',
-            );
-            footer.setWind(
-                w != null && Number.isFinite(w)
-                    ? `${w}${u.wind_speed_10m || ' km/h'}`
-                    : '—',
-            );
-        } catch {
-            /* keep previous values */
-        }
+    async function updateFooterWeather() {
+        await refreshFooterWeather(
+            footer,
+            services.LocationService.latitude,
+            services.LocationService.longitude,
+        );
     }
 
-    appShell.dom.appendChild(mainRow.dom);
-    appShell.dom.appendChild(footer.el);
-
-    refreshFooterWeather();
+    setSection('section-now');
+    updateFooterWeather();
     lastFooterWeatherFetch = Date.now();
 
     // === Main loop ===
@@ -2050,12 +1982,12 @@ export async function create({core, ops, services}) {
         const tMs = Date.now();
         if (tMs - lastFooterWeatherFetch >= footerWeatherIntervalMs) {
             lastFooterWeatherFetch = tMs;
-            refreshFooterWeather();
+            updateFooterWeather();
         }
 
         requestAnimationFrame(tick);
     }
     
     tick();
-    return { root: appShell, refreshFooterWeather };
+    return { root: appShell, refreshFooterWeather: updateFooterWeather };
 }
