@@ -1,13 +1,10 @@
 /**
- * Runtime template seeder.
+ * Source catalog seeder.
  *
  * Imports bundled recipe templates (see ./templates.js) into the user's
- * library on first activation. Gated by the meta flag `templatesSeededV1`
- * so user deletions persist across reloads. A manual "Restore templates"
- * action may pass `{ force: true }` to re-seed.
- *
- * Ingredient FoodItems are auto-created via the offline local nutrition
- * table (no network calls) — see resolveIngredientLocal.
+ * library when they click "Fetch from sources". Existing recipes (by name
+ * or source id) and foods (by name / alias / normalized name) are skipped
+ * so a re-run never duplicates items or re-fetches foods already pulled.
  */
 
 import * as repos from '../store/repos.js';
@@ -17,12 +14,21 @@ import bundled from './templates.js';
 
 const META_FLAG = 'templatesSeededV1';
 
+function recipeKeys(recipe) {
+    const keys = [];
+    const name = (recipe.nameLower || recipe.name || '').toLowerCase();
+    if (name) keys.push(`name:${name}`);
+    const ext = recipe.source?.externalId || recipe.id;
+    if (ext) keys.push(`id:${String(ext).toLowerCase()}`);
+    return keys;
+}
+
 /**
- * @param {{ force?: boolean, onProgress?: (info:{mealType:string, index:number, total:number, name:string}) => void }} [opts]
+ * @param {{ force?: boolean, skipNetwork?: boolean, onProgress?: (info:{mealType:string, index:number, total:number, done:number, name:string, skipped?:boolean}) => void }} [opts]
  * @returns {Promise<{ seeded:number, skipped:number, createdFoodItems:number, alreadyDone:boolean }>}
  */
 export async function seedTemplates(opts = {}) {
-    const { force = false, onProgress = null } = opts;
+    const { force = false, skipNetwork = true, onProgress = null } = opts;
 
     if (!force) {
         const flag = await repos.meta.get(META_FLAG);
@@ -44,63 +50,72 @@ export async function seedTemplates(opts = {}) {
     const foodCats = allCategories.filter((c) => c.kind === 'food');
     const mealCatByName = new Map(mealCats.map((c) => [c.name, c]));
 
-    // Pre-load existing foods & recipes once; importMealAsRecipe updates its
-    // own in-memory byName map, but it does not see items created across calls
-    // unless we re-read. Instead, we maintain a running list of created foods
-    // and pass it forward.
     const runningFoods = await repos.foodItems.list();
-    const existingRecipeNames = new Set(
-        (await repos.recipes.list()).map((r) => (r.nameLower || r.name || '').toLowerCase()),
-    );
+    const existingRecipeKeys = new Set();
+    for (const recipe of await repos.recipes.list()) {
+        for (const key of recipeKeys(recipe)) existingRecipeKeys.add(key);
+    }
 
+    const queued = [];
+    for (const mealType of mealTypes) {
+        const cat = mealCatByName.get(mealType);
+        const meals = templatesByType[mealType] || [];
+        if (!cat) {
+            console.warn(`[templateSeeder] no meal category for "${mealType}" — skipping ${meals.length} recipes`);
+            continue;
+        }
+        for (const meal of meals) queued.push({ mealType, meal, categoryId: cat.id });
+    }
+
+    const total = queued.length;
     let seeded = 0;
     let skipped = 0;
     const createdIds = new Set();
 
-    for (const mealType of mealTypes) {
-        const meals = templatesByType[mealType] || [];
-        const cat = mealCatByName.get(mealType);
-        if (!cat) {
-            console.warn(`[templateSeeder] no meal category for "${mealType}" — skipping ${meals.length} recipes`);
-            skipped += meals.length;
-            continue;
-        }
-        for (let i = 0; i < meals.length; i++) {
-            const meal = meals[i];
-            const nameKey = (meal.name || '').toLowerCase();
-            if (!nameKey || existingRecipeNames.has(nameKey)) { skipped++; continue; }
-            onProgress?.({ mealType, index: i + 1, total: meals.length, name: meal.name });
-            try {
-                const result = await importMealAsRecipe({
-                    meal,
-                    categoryId: cat.id,
-                    foodCategories: foodCats,
-                    existingFoods: runningFoods,
-                    autoCreate: true,
-                    skipNetwork: true,
-                    source: {
-                        kind: 'template',
-                        provider: meal.id && String(meal.id).startsWith('cv-') ? 'corevital' : 'themealdb',
-                        externalId: meal.id || null,
-                        url: meal.sourceUrl || meal.youtubeUrl || null,
-                        imageUrl: meal.imageUrl || null,
-                    },
-                });
-                seeded++;
-                existingRecipeNames.add(nameKey);
-                for (const fid of result.createdFoodIds) {
-                    if (!createdIds.has(fid)) {
-                        createdIds.add(fid);
-                        // Append to runningFoods so subsequent imports dedupe correctly.
-                        // Cheap refetch of just this item keeps the object shape correct.
-                        const fi = await repos.foodItems.get(fid);
-                        if (fi) runningFoods.push(fi);
-                    }
+    for (let i = 0; i < queued.length; i++) {
+        const { mealType, meal, categoryId } = queued[i];
+        const nameKey = (meal.name || '').toLowerCase();
+        const idKey = meal.id ? `id:${String(meal.id).toLowerCase()}` : '';
+        const already = (nameKey && existingRecipeKeys.has(`name:${nameKey}`))
+            || (idKey && existingRecipeKeys.has(idKey));
+        onProgress?.({
+            mealType,
+            index: i + 1,
+            total,
+            done: i + 1,
+            name: meal.name,
+            skipped: already || !nameKey,
+        });
+        if (!nameKey || already) { skipped++; continue; }
+        try {
+            const result = await importMealAsRecipe({
+                meal,
+                categoryId,
+                foodCategories: foodCats,
+                existingFoods: runningFoods,
+                autoCreate: true,
+                skipNetwork,
+                source: {
+                    kind: 'template',
+                    provider: meal.id && String(meal.id).startsWith('cv-') ? 'corevital' : 'themealdb',
+                    externalId: meal.id || null,
+                    url: meal.sourceUrl || meal.youtubeUrl || null,
+                    imageUrl: meal.imageUrl || null,
+                },
+            });
+            seeded++;
+            existingRecipeKeys.add(`name:${nameKey}`);
+            if (idKey) existingRecipeKeys.add(idKey);
+            for (const fid of result.createdFoodIds) {
+                if (!createdIds.has(fid)) {
+                    createdIds.add(fid);
+                    const fi = await repos.foodItems.get(fid);
+                    if (fi) runningFoods.push(fi);
                 }
-            } catch (err) {
-                console.warn(`[templateSeeder] "${meal.name}" failed: ${err.message}`);
-                skipped++;
             }
+        } catch (err) {
+            console.warn(`[templateSeeder] "${meal.name}" failed: ${err.message}`);
+            skipped++;
         }
     }
 

@@ -1,7 +1,7 @@
 import { DrawUI } from '../../../shared/drawUI/index.js';
 import * as off from '../api/openFoodFacts.js';
 import * as mdb from '../api/themealdb.js';
-import { offToFoodItem } from '../api/openFoodFacts.js';
+import { offToFoodItem, findFoodByBarcode, findFoodByOffProduct, foodItemToOffProduct } from '../api/openFoodFacts.js';
 import { importMealAsRecipe as sharedImportMeal } from '../api/importMeal.js';
 import * as repos from '../store/repos.js';
 import { STRINGS } from '../strings.js';
@@ -37,6 +37,7 @@ export function openOnlineSearch({ categories, foodItems }) {
     const statusEl = $('[data-status]');
     const resultsEl = $('[data-results]');
 
+    let libraryFoods = foodItems || [];
     let activeTab = 'food';
     tabsEl.forEach((b) => {
         b.addEventListener('click', () => {
@@ -53,16 +54,27 @@ export function openOnlineSearch({ categories, foodItems }) {
         resultsEl.innerHTML = '';
         statusEl.textContent = 'Searching…';
         try {
+            libraryFoods = await repos.foodItems.list();
             if (activeTab === 'food') {
                 const barcode = barcodeEl.value.trim();
                 let items = [];
+                let fromLibrary = false;
                 if (barcode) {
-                    const p = await off.getProductByBarcode(barcode);
-                    items = p ? [p] : [];
+                    const local = findFoodByBarcode(libraryFoods, barcode);
+                    if (local) {
+                        const hit = foodItemToOffProduct(local);
+                        items = hit ? [hit] : [];
+                        fromLibrary = true;
+                    } else {
+                        const p = await off.getProductByBarcode(barcode);
+                        items = p ? [p] : [];
+                    }
                 } else {
                     items = await off.searchProducts(qEl.value, { pageSize: 24 });
                 }
-                statusEl.textContent = `${items.length} result(s)`;
+                statusEl.textContent = fromLibrary
+                    ? `${items.length} result(s) · already in library`
+                    : `${items.length} result(s)`;
                 items.forEach((p) => resultsEl.appendChild(renderFoodResult(p)));
             } else {
                 const items = await mdb.searchMeals(qEl.value);
@@ -115,16 +127,33 @@ export function openOnlineSearch({ categories, foodItems }) {
         row.querySelector('.fos-meta').textContent = [p.brand, p.code].filter(Boolean).join(' · ');
         const catSel = row.querySelector('[data-cat]');
         fillCategories(catSel, 'food');
-        row.querySelector('[data-act="import"]').addEventListener('click', async () => {
-            try {
-                const catId = catSel.value || null;
-                const item = offToFoodItem(p, catId);
-                await repos.foodItems.put(item);
-                DrawUI.toast(`Added "${item.name}" to library`, 'success').showIn(document.body);
-            } catch (err) {
-                DrawUI.toast(`Import failed: ${err.message}`, 'error').showIn(document.body);
-            }
-        });
+        const importBtn = row.querySelector('[data-act="import"]');
+        const existing = findFoodByOffProduct(libraryFoods, p);
+        if (existing) {
+            importBtn.textContent = 'In library';
+            importBtn.disabled = true;
+        } else {
+            importBtn.addEventListener('click', async () => {
+                try {
+                    const catId = catSel.value || null;
+                    const item = offToFoodItem(p, catId);
+                    const already = findFoodByOffProduct(libraryFoods, p);
+                    if (already) {
+                        importBtn.textContent = 'In library';
+                        importBtn.disabled = true;
+                        DrawUI.toast(`"${already.name}" is already in the library`, 'info').showIn(document.body);
+                        return;
+                    }
+                    await repos.foodItems.put(item);
+                    libraryFoods = await repos.foodItems.list();
+                    importBtn.textContent = 'In library';
+                    importBtn.disabled = true;
+                    DrawUI.toast(`Added "${item.name}" to library`, 'success').showIn(document.body);
+                } catch (err) {
+                    DrawUI.toast(`Import failed: ${err.message}`, 'error').showIn(document.body);
+                }
+            });
+        }
         return row;
     }
 
@@ -191,6 +220,7 @@ export function openOnlineSearch({ categories, foodItems }) {
             },
         });
         statusEl.textContent = `Imported ${result.resolved} ingredient(s)`;
+        libraryFoods = await repos.foodItems.list();
         return result.recipe;
     }
 

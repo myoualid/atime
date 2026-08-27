@@ -16,9 +16,12 @@ function make() {
 export const healthSignals = {
     onLibraryChanged: make(),
     onCategoriesChanged: make(),
+    onMenusChanged: make(),
     onPlanChanged: make(),
     onPrefsChanged: make(),
     onImportCompleted: make(),
     onWeightChanged: make(),
-    onGoalsChanged: make(),    onSportsLibraryChanged: make(),
-    onSportsPlanChanged: make(),};
+    onGoalsChanged: make(),
+    onSportsLibraryChanged: make(),
+    onSportsPlanChanged: make(),
+};

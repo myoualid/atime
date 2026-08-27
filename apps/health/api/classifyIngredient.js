@@ -4,7 +4,7 @@
  */
 
 import * as off from './openFoodFacts.js';
-import { lookup as tableLookup } from './nutritionTable.js';
+import { lookup as tableLookup, normalizeName } from './nutritionTable.js';
 
 /** Keyword → category name map. Lowercased, evaluated in order. */
 const KEYWORDS = [
@@ -125,6 +125,90 @@ const perGramFromPer100 = (p100) => ({
     micros: {},
 });
 
+function aliasesFor(name, extra = []) {
+    const self = String(name || '').trim().toLowerCase();
+    const out = [];
+    const seen = new Set(self ? [self] : []);
+    const add = (s) => {
+        const t = String(s || '').trim();
+        if (!t) return;
+        const k = t.toLowerCase();
+        if (seen.has(k)) return;
+        seen.add(k);
+        out.push(t);
+    };
+    add(normalizeName(name));
+    for (const x of extra) add(x);
+    return out;
+}
+
+function payloadFromTable(name, foodCategories, hit) {
+    const e = hit.entry;
+    const p100 = {
+        kcal: e.kcal, protein_g: e.protein_g, carbs_g: e.carbs_g, fat_g: e.fat_g,
+        fiber_g: e.fiber_g, sugar_g: e.sugar_g, sodium_mg: e.sodium_mg, saturatedFat_g: e.saturatedFat_g,
+    };
+    const catByName = e.category ? foodCategories.find((c) => c.name === e.category) : null;
+    const categoryId = catByName?.id || classifyByKeyword(name, foodCategories) || null;
+    return {
+        name,
+        categoryId,
+        defaultServingG: 100,
+        nutritionPerGram: perGramFromPer100(p100),
+        source: { provider: 'local-nutrition-table', externalId: hit.key },
+        tags: ['auto-created'],
+        aliases: aliasesFor(name, [hit.key]),
+    };
+}
+
+/**
+ * Index library foods so later imports can reuse them without hitting Open Food Facts.
+ * Keys: exact name, aliases, and prep-stripped normalized names ("chopped onion" → "onion").
+ */
+export function indexFoodsByName(foods) {
+    const map = new Map();
+    const add = (key, food) => {
+        const k = String(key || '').trim().toLowerCase();
+        if (k && !map.has(k)) map.set(k, food);
+    };
+    for (const f of foods || []) {
+        add(f.nameLower || f.name, f);
+    }
+    for (const f of foods || []) {
+        add(normalizeName(f.name), f);
+        for (const alias of f.aliases || []) {
+            add(alias, f);
+            add(normalizeName(alias), f);
+        }
+    }
+    return map;
+}
+
+export function lookupExistingFood(byName, name) {
+    const lower = String(name || '').trim().toLowerCase();
+    if (lower && byName.has(lower)) return byName.get(lower);
+    const norm = normalizeName(name);
+    if (norm && byName.has(norm)) return byName.get(norm);
+    return null;
+}
+
+export function rememberFood(byName, food) {
+    if (!byName || !food) return;
+    const add = (key) => {
+        const k = String(key || '').trim().toLowerCase();
+        if (k && !byName.has(k)) byName.set(k, food);
+    };
+    add(food.nameLower || food.name);
+    add(normalizeName(food.name));
+    for (const alias of food.aliases || []) {
+        add(alias);
+        add(normalizeName(alias));
+    }
+}
+
+/** In-session OFF results keyed by normalized ingredient name. */
+const offNutritionCache = new Map();
+
 /**
  * Synchronous, offline-only ingredient resolver.
  * Uses the local curated nutrition table; falls back to zero nutrition when
@@ -133,23 +217,7 @@ const perGramFromPer100 = (p100) => ({
  */
 export function resolveIngredientLocal(name, foodCategories) {
     const hit = tableLookup(name);
-    if (hit) {
-        const e = hit.entry;
-        const p100 = {
-            kcal: e.kcal, protein_g: e.protein_g, carbs_g: e.carbs_g, fat_g: e.fat_g,
-            fiber_g: e.fiber_g, sugar_g: e.sugar_g, sodium_mg: e.sodium_mg, saturatedFat_g: e.saturatedFat_g,
-        };
-        const catByName = e.category ? foodCategories.find((c) => c.name === e.category) : null;
-        const categoryId = catByName?.id || classifyByKeyword(name, foodCategories) || null;
-        return {
-            name,
-            categoryId,
-            defaultServingG: 100,
-            nutritionPerGram: perGramFromPer100(p100),
-            source: { provider: 'local-nutrition-table', externalId: hit.key },
-            tags: ['auto-created'],
-        };
-    }
+    if (hit) return payloadFromTable(name, foodCategories, hit);
     return {
         name,
         categoryId: classifyByKeyword(name, foodCategories) || null,
@@ -157,47 +225,42 @@ export function resolveIngredientLocal(name, foodCategories) {
         nutritionPerGram: zeroNut(),
         source: { provider: 'unknown', externalId: name },
         tags: ['auto-created'],
+        aliases: aliasesFor(name),
     };
 }
 
 /**
  * Resolve one ingredient: find nutrition via OFF + classify category.
  * Returns a FoodItem-shaped payload ready for repos.foodItems.put().
+ * Callers should skip this when lookupExistingFood() already found a library item.
  */
 export async function resolveIngredient(name, foodCategories) {
     // 1) Local curated table covers most common raw ingredients with reliable nutrition.
     const hit = tableLookup(name);
-    if (hit) {
-        const e = hit.entry;
-        const p100 = {
-            kcal: e.kcal, protein_g: e.protein_g, carbs_g: e.carbs_g, fat_g: e.fat_g,
-            fiber_g: e.fiber_g, sugar_g: e.sugar_g, sodium_mg: e.sodium_mg, saturatedFat_g: e.saturatedFat_g,
-        };
-        const catByName = e.category ? foodCategories.find((c) => c.name === e.category) : null;
-        const categoryId = catByName?.id || classifyByKeyword(name, foodCategories) || null;
-        return {
-            name,
-            categoryId,
-            defaultServingG: 100,
-            nutritionPerGram: perGramFromPer100(p100),
-            source: { provider: 'local-nutrition-table', externalId: hit.key },
-            tags: ['auto-created'],
-        };
-    }
+    if (hit) return payloadFromTable(name, foodCategories, hit);
 
     // 2) Fall back to Open Food Facts for unknown ingredients (best-effort).
+    // Reuse a prior pull for the same normalized name so a session never
+    // searches OFF twice for "sumac" / "fresh sumac".
+    const cacheKey = normalizeName(name) || String(name || '').trim().toLowerCase();
     let nutritionPerGram = zeroNut();
     let off_code = null;
-    try {
-        const products = await off.searchProducts(name, { pageSize: 5 });
-        // Pick first product with non-zero kcal; fall back to first.
-        const good = products.find((p) => p.nutritionPer100g.kcal > 0) || products[0];
-        if (good) {
-            nutritionPerGram = perGramFromPer100(good.nutritionPer100g);
-            off_code = good.code || null;
+    if (cacheKey && offNutritionCache.has(cacheKey)) {
+        const cached = offNutritionCache.get(cacheKey);
+        nutritionPerGram = cached.nutritionPerGram;
+        off_code = cached.off_code;
+    } else {
+        try {
+            const products = await off.searchProducts(name, { pageSize: 5 });
+            const good = products.find((p) => p.nutritionPer100g.kcal > 0) || products[0];
+            if (good) {
+                nutritionPerGram = perGramFromPer100(good.nutritionPer100g);
+                off_code = good.code || null;
+            }
+        } catch {
+            // Network/CORS: zeros.
         }
-    } catch {
-        // Network/CORS: zeros.
+        if (cacheKey) offNutritionCache.set(cacheKey, { nutritionPerGram, off_code });
     }
     // Prefer keyword classification over OFF product tags — OFF returns product
     // categories (e.g. "caramelized-onion pasta"), not ingredient taxonomy.
@@ -209,5 +272,6 @@ export async function resolveIngredient(name, foodCategories) {
         nutritionPerGram,
         source: { provider: 'themealdb-ingredient', externalId: off_code ? `off:${off_code}` : name },
         tags: ['auto-created'],
+        aliases: aliasesFor(name),
     };
 }

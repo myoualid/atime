@@ -1,11 +1,11 @@
-import { foodItems, recipes, categories, plan, prefs, sportDefinitions, sportPlan, replaceAll, mergeAll } from './repos.js';
+import { foodItems, recipes, categories, plan, prefs, sportDefinitions, sportPlan, menus, replaceAll, mergeAll } from './repos.js';
 import { healthSignals } from '../signals.js';
 import { STRINGS } from '../strings.js';
 
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 export async function exportJson() {
-    const [cats, foods, recs, planEntries, preferences, sportDefs, sportEntries] = await Promise.all([
+    const [cats, foods, recs, planEntries, preferences, sportDefs, sportEntries, menuList] = await Promise.all([
         categories.list(),
         foodItems.list(),
         recipes.list(),
@@ -13,6 +13,7 @@ export async function exportJson() {
         prefs.get(),
         sportDefinitions.list(),
         sportPlan.listByRange('0000-01-01', '9999-12-31'),
+        menus.list(),
     ]);
     return {
         app: 'corevital-health',
@@ -25,22 +26,23 @@ export async function exportJson() {
         planEntries,
         sportDefinitions: sportDefs,
         sportEntries,
+        menus: menuList,
     };
 }
 
-export function downloadJson(payload) {
+export function downloadJson(payload, filename) {
     const iso = new Date().toISOString().slice(0, 10);
-    const filename = STRINGS.exportFilename(iso);
+    const name = filename || STRINGS.exportFilename(iso);
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = name;
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    return filename;
+    return name;
 }
 
 export function validatePayload(payload) {
@@ -54,7 +56,7 @@ export function validatePayload(payload) {
     }
     if (!Number.isInteger(payload.schemaVersion)) errors.push({ path: '/schemaVersion', msg: 'Missing schemaVersion' });
     if (payload.schemaVersion > CURRENT_SCHEMA_VERSION) errors.push({ path: '/schemaVersion', msg: `Schema too new (${payload.schemaVersion} > ${CURRENT_SCHEMA_VERSION})` });
-    for (const key of ['categories', 'foodItems', 'recipes', 'planEntries', 'sportDefinitions', 'sportEntries']) {
+    for (const key of ['categories', 'foodItems', 'recipes', 'planEntries', 'sportDefinitions', 'sportEntries', 'menus']) {
         if (payload[key] !== undefined && !Array.isArray(payload[key])) {
             errors.push({ path: `/${key}`, msg: 'Must be an array' });
         }
@@ -68,6 +70,7 @@ export function migrate(payload) {
     const out = { ...payload };
     if (!Array.isArray(out.sportDefinitions)) out.sportDefinitions = [];
     if (!Array.isArray(out.sportEntries)) out.sportEntries = [];
+    if (!Array.isArray(out.menus)) out.menus = [];
     return out;
 }
 
@@ -86,6 +89,7 @@ export async function importPayload(payload, strategy) {
         planEntries: migrated.planEntries?.length || 0,
         sportDefinitions: migrated.sportDefinitions?.length || 0,
         sportEntries: migrated.sportEntries?.length || 0,
+        menus: migrated.menus?.length || 0,
     };
     if (strategy === 'replace') {
         await replaceAll(migrated);

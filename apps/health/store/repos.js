@@ -229,6 +229,22 @@ export const plan = {
         }
         return removed;
     },
+    async clearByRange(fromIso, toIso) {
+        let removed = 0;
+        await withTx([STORES.planEntries], 'readwrite', async (tx) => {
+            const store = tx.objectStore(STORES.planEntries);
+            const idx = store.index('by_date');
+            const all = await reqAsPromise(idx.getAll(IDBKeyRange.bound(fromIso, toIso)));
+            removed = all.length;
+            for (const entry of all) {
+                await reqAsPromise(store.delete(entry.id));
+            }
+        });
+        if (removed > 0) {
+            healthSignals.onPlanChanged.dispatch({ from: fromIso, to: toIso, cleared: true, removed });
+        }
+        return removed;
+    },
 };
 
 // ------------------------ Preferences ----------------------
@@ -251,6 +267,8 @@ const DEFAULT_PREFS = {
     weightUnit: 'kg',
     theme: 'dark',
     showNutritionInPlanner: true,
+    selectedMenuId: null,
+    libraryMenuId: null,
 };
 
 export const prefs = {
@@ -405,6 +423,45 @@ export const goalPeriods = {
     },
 };
 
+// ------------------------ Menus ----------------------------
+
+function uniqueIds(ids) {
+    const seen = new Set();
+    const out = [];
+    for (const raw of ids || []) {
+        const id = String(raw || '').trim();
+        if (!id || seen.has(id)) continue;
+        seen.add(id);
+        out.push(id);
+    }
+    return out;
+}
+
+export const menus = {
+    async list() {
+        return (await getAll(STORES.menus)).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    get(id) { return getById(STORES.menus, id); },
+    async put(menu) {
+        const base = baseFields(menu);
+        const full = {
+            ...base,
+            name: menu.name?.trim() || 'Untitled menu',
+            nameLower: (menu.name || '').toLowerCase(),
+            description: menu.description || '',
+            foodItemIds: uniqueIds(menu.foodItemIds),
+            recipeIds: uniqueIds(menu.recipeIds),
+        };
+        await putItem(STORES.menus, full);
+        healthSignals.onMenusChanged.dispatch({ id: full.id });
+        return full;
+    },
+    async remove(id) {
+        await deleteItem(STORES.menus, id);
+        healthSignals.onMenusChanged.dispatch({ id, removed: true });
+    },
+};
+
 // ------------------------ Meta -----------------------------
 
 export const meta = {
@@ -506,11 +563,11 @@ export const sportPlan = {
 
 // ------------------------ Bulk I/O (import) ----------------
 
-export async function replaceAll({ preferences, categories: cats, foodItems: foods, recipes: recs, planEntries, sportDefinitions: sportDefs, sportEntries }) {
+export async function replaceAll({ preferences, categories: cats, foodItems: foods, recipes: recs, planEntries, sportDefinitions: sportDefs, sportEntries, menus: menuList }) {
     await openDB();
     await withTx([
         STORES.foodItems, STORES.recipes, STORES.categories, STORES.planEntries, STORES.preferences,
-        STORES.sportDefinitions, STORES.sportEntries,
+        STORES.sportDefinitions, STORES.sportEntries, STORES.menus,
     ], 'readwrite', async (tx) => {
         const stores = {
             [STORES.foodItems]: tx.objectStore(STORES.foodItems),
@@ -520,6 +577,7 @@ export async function replaceAll({ preferences, categories: cats, foodItems: foo
             [STORES.preferences]: tx.objectStore(STORES.preferences),
             [STORES.sportDefinitions]: tx.objectStore(STORES.sportDefinitions),
             [STORES.sportEntries]: tx.objectStore(STORES.sportEntries),
+            [STORES.menus]: tx.objectStore(STORES.menus),
         };
         for (const s of Object.values(stores)) await reqAsPromise(s.clear());
         for (const x of cats || []) await reqAsPromise(stores[STORES.categories].put(x));
@@ -528,10 +586,12 @@ export async function replaceAll({ preferences, categories: cats, foodItems: foo
         for (const x of planEntries || []) await reqAsPromise(stores[STORES.planEntries].put(x));
         for (const x of sportDefs || []) await reqAsPromise(stores[STORES.sportDefinitions].put(x));
         for (const x of sportEntries || []) await reqAsPromise(stores[STORES.sportEntries].put(x));
+        for (const x of menuList || []) await reqAsPromise(stores[STORES.menus].put(x));
         if (preferences) await reqAsPromise(stores[STORES.preferences].put({ ...preferences, id: 'singleton' }));
     });
     healthSignals.onCategoriesChanged.dispatch({});
     healthSignals.onLibraryChanged.dispatch({});
+    healthSignals.onMenusChanged.dispatch({});
     healthSignals.onPlanChanged.dispatch({});
     healthSignals.onPrefsChanged.dispatch({});
     healthSignals.onSportsLibraryChanged.dispatch({});
@@ -541,11 +601,11 @@ export async function replaceAll({ preferences, categories: cats, foodItems: foo
 export async function mergeAll(payload, preferImported) {
     const {
         categories: cats = [], foodItems: foods = [], recipes: recs = [], planEntries = [],
-        sportDefinitions: sportDefs = [], sportEntries = [], preferences: prefsIn,
+        sportDefinitions: sportDefs = [], sportEntries = [], menus: menuList = [], preferences: prefsIn,
     } = payload;
     await withTx([
         STORES.foodItems, STORES.recipes, STORES.categories, STORES.planEntries, STORES.preferences,
-        STORES.sportDefinitions, STORES.sportEntries,
+        STORES.sportDefinitions, STORES.sportEntries, STORES.menus,
     ], 'readwrite', async (tx) => {
         const put = async (store, x) => {
             const existing = await reqAsPromise(store.get(x.id));
@@ -557,12 +617,14 @@ export async function mergeAll(payload, preferImported) {
         for (const x of planEntries) await put(tx.objectStore(STORES.planEntries), x);
         for (const x of sportDefs) await put(tx.objectStore(STORES.sportDefinitions), x);
         for (const x of sportEntries) await put(tx.objectStore(STORES.sportEntries), x);
+        for (const x of menuList) await put(tx.objectStore(STORES.menus), x);
         if (prefsIn && preferImported) {
             await reqAsPromise(tx.objectStore(STORES.preferences).put({ ...prefsIn, id: 'singleton' }));
         }
     });
     healthSignals.onCategoriesChanged.dispatch({});
     healthSignals.onLibraryChanged.dispatch({});
+    healthSignals.onMenusChanged.dispatch({});
     healthSignals.onPlanChanged.dispatch({});
     healthSignals.onPrefsChanged.dispatch({});
     healthSignals.onSportsLibraryChanged.dispatch({});

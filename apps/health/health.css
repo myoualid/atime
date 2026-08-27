@@ -22,16 +22,154 @@
 .health-section { display: flex; flex-direction: column; gap: 1rem; width: 100%; height: 100%; min-height: 0; max-height: 100%; overflow: hidden; color: var(--health-text); }
 .health-section .health-h { color: var(--health-accent); margin: 0; font-weight: 600; letter-spacing: 0.02em; flex: 0 0 auto; }
 
-.health-shell { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; flex: 1 1 auto; min-height: 0; overflow: hidden; }
-@media (max-width: 900px) { .health-shell { grid-template-columns: 1fr; } }
+.health-planner-section { flex: 1 1 auto; }
 
-.health-library { display: flex; flex-direction: column; gap: 0.5rem; background: var(--health-surface); border: 1px solid var(--health-border); border-radius: 12px; padding: 0.75rem; min-height: 0; overflow: hidden; backdrop-filter: blur(10px); width: 320px; min-width: 260px; max-width: min(70vw, 620px); resize: horizontal; }
+.health-library { display: flex; flex-direction: column; gap: 0.5rem; background: var(--health-surface); border: 1px solid var(--health-border); border-radius: 12px; padding: 0.75rem; min-height: 0; overflow: hidden; backdrop-filter: blur(10px); width: 100%; min-width: 0; }
 .health-library-header { display: flex; flex-direction: column; gap: 0.5rem; }
-.health-library-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.health-library-actions button { font-size: 0.85rem; padding: 0.3rem 0.6rem; }
+.health-library-menu-picker { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.72rem; color: var(--health-text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+.health-library-menu-picker select { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--health-border); color: var(--health-text); border-radius: 4px; padding: 0.35rem 0.5rem; font: inherit; text-transform: none; letter-spacing: 0; }
 .health-library-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.35rem; padding-right: 0.25rem; }
 .health-library-footer { font-size: 0.75rem; color: var(--health-text-dim); padding-top: 0.25rem; border-top: 1px solid var(--health-border); display: flex; justify-content: space-between; }
-@media (max-width: 900px) { .health-library { width: auto; max-width: none; resize: none; } }
+.app-sidebar .health-library {
+    flex: 1 1 auto;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.15rem 0.1rem;
+    backdrop-filter: none;
+}
+.health-library[hidden],
+.health-library-nav[hidden],
+.health-menu-canvas[hidden],
+.health-menu-canvas-editor[hidden],
+.health-library-review-content[hidden],
+.health-library-review-controls[hidden],
+.health-library-review-stats[hidden],
+.health-library-review-empty[hidden] {
+    display: none !important;
+}
+.app-sidebar .health-library-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+.app-sidebar .health-library-nav .health-library {
+    height: auto;
+    min-height: 140px;
+    border: 1px solid var(--health-border);
+    border-radius: 10px;
+    padding: 0.5rem;
+    background: var(--health-surface);
+}
+
+.health-menu-list {
+    flex: 0 0 auto;
+    min-height: 196px;
+    max-height: 42%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border: 1px solid var(--health-border);
+    border-radius: 10px;
+    padding: 0.5rem;
+    background: var(--health-surface);
+    min-width: 0;
+}
+.health-menu-list-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--health-text-dim);
+    flex: 0 0 auto;
+}
+.health-menu-list-head button { text-transform: none; letter-spacing: 0; font-size: 0.78rem; padding: 0.2rem 0.5rem; }
+.health-menu-list-io { display: flex; gap: 0.3rem; flex: 0 0 auto; }
+.health-menu-list-io button {
+    flex: 1 1 auto;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.72rem;
+    padding: 0.2rem 0.4rem;
+}
+.health-menu-list-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.25rem; min-height: 0; }
+.health-menu-list-empty { font-size: 0.78rem; color: var(--health-text-dim); padding: 0.4rem 0.25rem; }
+.health-menu-list-item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.1rem;
+    text-align: left;
+    width: 100%;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--health-text);
+    font: inherit;
+    cursor: pointer;
+}
+.health-menu-list-item:hover { background: var(--health-surface-hover); }
+.health-menu-list-item.is-active {
+    background: var(--health-slot-over);
+    border-color: rgba(212, 175, 55, 0.4);
+}
+.health-menu-list-name { font-weight: 600; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.health-menu-list-meta { font-size: 0.7rem; color: var(--health-text-dim); }
+
+.health-menu-canvas { display: flex; flex-direction: column; min-height: 0; flex: 1 1 auto; }
+.health-menu-canvas-editor { display: flex; flex-direction: column; gap: 0.6rem; min-height: 0; flex: 1 1 auto; }
+.health-menu-canvas-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.health-menu-canvas-head input[type="text"] {
+    flex: 1 1 180px;
+    min-width: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--health-border);
+    color: var(--health-text);
+    border-radius: 6px;
+    padding: 0.4rem 0.55rem;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.health-menu-canvas-count { font-size: 0.78rem; color: var(--health-text-dim); }
+.health-menu-drop {
+    flex: 1 1 auto;
+    min-height: 180px;
+    overflow: auto;
+    border: 1px dashed var(--health-border);
+    border-radius: 10px;
+    padding: 0.65rem;
+    background: var(--health-slot-bg);
+    gap: 0.6rem;
+}
+.health-menu-drop-group { display: flex; flex-direction: column; gap: 0.3rem; }
+.health-menu-drop-heading {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--health-text-dim);
+    padding: 0.15rem 0.1rem;
+}
+.health-menu-item { display: flex; align-items: stretch; gap: 0.3rem; }
+.health-menu-item .health-chip { flex: 1 1 auto; min-width: 0; }
+.health-menu-item-remove {
+    flex: 0 0 auto;
+    width: 28px;
+    border: 1px solid var(--health-border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--health-text-dim);
+    cursor: pointer;
+}
+.health-menu-item-remove:hover { color: #e06666; border-color: #e06666; }
 
 .health-cat { border-radius: 8px; overflow: hidden; }
 .health-cat-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; cursor: pointer; user-select: none; }
@@ -120,6 +258,19 @@
 .health-summary-v { font-size: 1.1rem; color: var(--health-accent); font-weight: 600; }
 
 .health-editor-form { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.5rem; min-width: 320px; max-width: 520px; }
+.health-editor-form.health-menu-editor { min-width: min(560px, 90vw); max-width: 720px; }
+.health-menu-picker { display: flex; flex-direction: column; min-height: 240px; max-height: min(50vh, 440px); border: 1px solid var(--health-border); border-radius: 8px; overflow: hidden; background: rgba(0, 0, 0, 0.18); }
+.health-menu-picker-toolbar { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; padding: 0.45rem; border-bottom: 1px solid var(--health-border); }
+.health-menu-picker-toolbar input[type="search"] { flex: 1 1 160px; min-width: 0; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--health-border); color: var(--health-text); border-radius: 4px; padding: 0.35rem 0.5rem; font: inherit; }
+.health-menu-picker-bulk { display: flex; gap: 0.35rem; }
+.health-menu-picker-bulk button { font-size: 0.75rem; padding: 0.25rem 0.5rem; }
+.health-menu-picker-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.health-menu-picker-empty { padding: 1rem; text-align: center; color: var(--health-text-dim); font-size: 0.82rem; }
+.health-menu-picker-row { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; gap: 0.45rem; align-items: center; padding: 0.35rem 0.5rem; cursor: pointer; font-size: 0.82rem; }
+.health-menu-picker-row:hover { background: var(--health-surface-hover); }
+.health-menu-picker-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--health-text); }
+.health-menu-picker-cat { color: var(--health-text-dim); font-size: 0.72rem; }
+.health-menu-picker-footer { padding: 0.4rem 0.5rem; border-top: 1px solid var(--health-border); font-size: 0.75rem; color: var(--health-text-dim); }
 .health-editor-form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--health-text-dim); }
 .health-editor-form input, .health-editor-form select, .health-editor-form textarea { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--health-border); color: var(--health-text); border-radius: 4px; padding: 0.35rem 0.5rem; font: inherit; }
 .health-editor-form textarea { resize: vertical; min-height: 60px; }
@@ -210,6 +361,25 @@
 .health-section button:focus { outline: 2px solid var(--health-accent); outline-offset: 1px; }
 .health-section button.primary { background: var(--health-accent); color: #1a1a2e; border-color: var(--health-accent); font-weight: 600; }
 .health-section button.primary:hover { background: #e8c75d; }
+.health-section button:disabled { opacity: 0.5; cursor: default; }
+.health-plan-load-actions button:disabled { opacity: 0.5; cursor: default; }
+
+.health-plan-load { display: flex; flex-direction: column; gap: 0.75rem; min-width: min(22rem, 90vw); color: var(--health-text); }
+.health-plan-load-actions { display: flex; flex-direction: column; gap: 0.4rem; }
+.health-plan-load-actions button {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--health-border);
+    color: var(--health-text);
+    border-radius: 4px;
+    padding: 0.45rem 0.7rem;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.85rem;
+}
+.health-plan-load-actions button:hover { background: var(--health-surface-hover); }
+.health-plan-load-actions button.primary { background: var(--health-accent); color: #1a1a2e; border-color: var(--health-accent); font-weight: 600; }
+.health-plan-load-actions button.primary:hover { background: #e8c75d; }
 
 /* Online search panel */
 .health-online-search { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; height: 100%; min-height: 0; color: var(--health-text); }
@@ -432,7 +602,7 @@
 
 
 /* ------------------------------ Sports section ------------------------------ */
-.health-sports-section { display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem; height: 100%; min-height: 0; overflow: hidden; color: var(--health-text); }
+.health-sports-section { display: flex; flex-direction: column; gap: 0.75rem; height: 100%; min-height: 0; overflow: hidden; color: var(--health-text); }
 .health-sports-header { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; flex: 0 0 auto; }
 .health-sports-header .health-h { flex: 1 1 auto; }
 .health-sports-view-toggle { display: flex; gap: 0.25rem; }
@@ -440,15 +610,21 @@
 .health-sports-nav { display: flex; gap: 0.4rem; align-items: center; }
 .health-sports-current { color: var(--health-accent); font-weight: 600; min-width: 14ch; text-align: center; }
 
-.health-sports-body { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 1rem; flex: 1 1 auto; min-height: 0; overflow: hidden; }
-@media (max-width: 900px) { .health-sports-body { grid-template-columns: 1fr; } }
-
-.health-sports-library { display: flex; flex-direction: column; gap: 0.5rem; background: var(--health-surface); border: 1px solid var(--health-border); border-radius: 12px; padding: 0.75rem; min-height: 0; overflow: hidden; }
-.health-sports-library-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-.health-sports-library-grid { display: flex; flex-direction: column; gap: 0.35rem; overflow-y: auto; min-height: 0; padding-right: 0.25rem; }
+.health-sports-library { display: flex; flex-direction: column; gap: 0.5rem; background: var(--health-surface); border: 1px solid var(--health-border); border-radius: 12px; padding: 0.75rem; min-height: 0; overflow: hidden; width: 100%; }
+.health-sports-library-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex: 0 0 auto; }
+.health-sports-library-grid { display: flex; flex-direction: column; gap: 0.35rem; overflow-y: auto; flex: 1 1 auto; min-height: 0; padding-right: 0.25rem; }
 .health-empty { color: var(--health-text-dim); font-size: 0.85rem; margin: 0.5rem 0; }
 
-.health-sports-calendar { flex: 1 1 auto; min-height: 0; overflow: auto; padding-right: 0.25rem; }
+.app-sidebar .health-sports-library {
+    flex: 1 1 auto;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0.15rem 0.1rem;
+}
+
+.health-sports-calendar { flex: 1 1 auto; min-height: 0; min-width: 0; overflow: auto; padding-right: 0.25rem; }
 .health-sports-day-slot { min-height: 120px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem; }
 .health-sports-week-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.5rem; }
 .health-sports-week-cell { display: flex; flex-direction: column; gap: 0.25rem; border: 1px solid var(--health-border); border-radius: 8px; padding: 0.4rem; background: var(--health-slot-bg); min-height: 140px; }

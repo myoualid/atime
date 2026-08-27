@@ -7,14 +7,21 @@
  */
 
 import * as repos from '../store/repos.js';
-import { resolveIngredient, resolveIngredientLocal } from './classifyIngredient.js';
+import {
+    resolveIngredient,
+    resolveIngredientLocal,
+    indexFoodsByName,
+    lookupExistingFood,
+    rememberFood,
+} from './classifyIngredient.js';
+import { normalizeName } from './nutritionTable.js';
 
 /**
  * @param {Object} opts
  * @param {Object} opts.meal           Normalized meal from themealdb.normalizeMeal (or compatible shape)
  * @param {string|null} opts.categoryId  Meal (recipe) categoryId in our library
  * @param {Array} opts.foodCategories   Food-kind categories from our library
- * @param {Array} opts.existingFoods    Current foodItems (used for dedupe-by-name)
+ * @param {Array} opts.existingFoods    Current foodItems (deduped by name, alias, and normalized name)
  * @param {boolean} [opts.autoCreate]   Auto-create missing ingredients (default true)
  * @param {boolean} [opts.skipNetwork]  Use local-only ingredient resolver (default false)
  * @param {Object|null} [opts.source]   Override source metadata on the recipe
@@ -35,9 +42,7 @@ export async function importMealAsRecipe({
         throw new Error('importMealAsRecipe: invalid meal payload');
     }
 
-    const byName = new Map(
-        (existingFoods || []).map((f) => [f.nameLower || (f.name || '').toLowerCase(), f]),
-    );
+    const byName = indexFoodsByName(existingFoods);
     const ingredients = [];
     const createdFoodIds = [];
     let resolved = 0;
@@ -48,18 +53,30 @@ export async function importMealAsRecipe({
         const key = (ing.name || '').toLowerCase();
         if (!key) { skipped++; continue; }
 
-        let fi = byName.get(key);
+        let fi = lookupExistingFood(byName, ing.name);
         if (!fi && autoCreate) {
             onProgress?.(ing.name, i + 1, meal.ingredients.length);
             const payload = skipNetwork
                 ? resolveIngredientLocal(ing.name, foodCategories)
                 : await resolveIngredient(ing.name, foodCategories);
             payload.defaultServingG = ing.amountG || payload.defaultServingG;
+            const aliases = new Set(payload.aliases || []);
+            const addAlias = (s) => {
+                const t = String(s || '').trim();
+                if (t && t.toLowerCase() !== String(payload.name || '').toLowerCase()) aliases.add(t);
+            };
+            addAlias(ing.name);
+            addAlias(normalizeName(ing.name));
+            payload.aliases = [...aliases];
             fi = await repos.foodItems.put(payload);
-            byName.set(key, fi);
             createdFoodIds.push(fi.id);
         }
         if (!fi) { skipped++; continue; }
+
+        rememberFood(byName, fi);
+        const norm = normalizeName(ing.name);
+        if (key && !byName.has(key)) byName.set(key, fi);
+        if (norm && !byName.has(norm)) byName.set(norm, fi);
 
         ingredients.push({
             foodItemId: fi.id,

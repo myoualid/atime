@@ -1,18 +1,15 @@
 import { libraryChip } from '../planner/planChip.js';
 import { openFoodEditor } from './foodEditor.js';
 import { openRecipeEditor } from './recipeEditor.js';
-import { openOnlineSearch } from './onlineSearch.js';
-import * as repos from '../store/repos.js';
-import * as io from '../store/io.js';
-import { seedTemplates } from '../seed/templateSeeder.js';
-import { DrawUI } from '../../../shared/drawUI/index.js';
 import { STRINGS } from '../strings.js';
 
 /**
- * Build the left-hand library panel.
- * @param {{ getState: () => { foodItems:Array, recipes:Array, categories:Array } }} opts
+ * Build the left-hand library browser used by the meal planner and the
+ * Library workspace. Setup actions live in the Library section; this panel
+ * is for searching, editing, and dragging items.
+ * @param {{ getState: () => { foodItems:Array, recipes:Array, categories:Array, menus?:Array, selectedMenuId?:string|null }, onMenuChange?: (menuId:string) => void, showMenuPicker?: boolean }} opts
  */
-export function createLibraryPanel({ getState }) {
+export function createLibraryPanel({ getState, onMenuChange, showMenuPicker = true } = {}) {
     const root = document.createElement('div');
     root.className = 'health-library';
 
@@ -24,15 +21,14 @@ export function createLibraryPanel({ getState }) {
 
     root.innerHTML = `
         <div class="health-library-header">
+            ${showMenuPicker ? `
+            <label class="health-library-menu-picker">
+                <span>Menu</span>
+                <select data-menu aria-label="Choose a menu or full library">
+                    <option value="">${STRINGS.fullLibrary}</option>
+                </select>
+            </label>` : ''}
             <input type="search" placeholder="${STRINGS.search}" class="health-library-search" style="background:rgba(0,0,0,0.3); border:1px solid var(--health-border); color:var(--health-text); border-radius:4px; padding:0.35rem 0.5rem; font:inherit;">
-            <div class="health-library-actions">
-                <button type="button" data-act="add-food" class="primary">${STRINGS.addFood}</button>
-                <button type="button" data-act="add-recipe" class="primary">${STRINGS.addRecipe}</button>
-                <button type="button" data-act="online" title="Search TheMealDB and Open Food Facts">🌐 Online</button>
-                <button type="button" data-act="restore-templates" title="Re-seed bundled recipe templates">✨ Templates</button>
-                <button type="button" data-act="import">${STRINGS.import}</button>
-                <button type="button" data-act="export">${STRINGS.export}</button>
-            </div>
         </div>
         <div class="health-library-scroll" data-body></div>
         <div class="health-library-footer">
@@ -41,6 +37,7 @@ export function createLibraryPanel({ getState }) {
     `;
 
     const searchInput = root.querySelector('.health-library-search');
+    const menuSelect = root.querySelector('[data-menu]');
     const body = root.querySelector('[data-body]');
     const countEl = root.querySelector('[data-count]');
 
@@ -52,65 +49,8 @@ export function createLibraryPanel({ getState }) {
         debounceTimer = setTimeout(() => { query = v; render(); }, 120);
     });
 
-    root.querySelector('[data-act="add-food"]').addEventListener('click', () => {
-        const { categories } = getState();
-        openFoodEditor({ categories });
-    });
-    root.querySelector('[data-act="add-recipe"]').addEventListener('click', () => {
-        const { categories, foodItems } = getState();
-        if (foodItems.length === 0) {
-            DrawUI.toast('Add some foods first so recipes have ingredients.', 'warning').showIn(document.body);
-            return;
-        }
-        openRecipeEditor({ categories, foodItems });
-    });
-    root.querySelector('[data-act="online"]').addEventListener('click', () => {
-        const { categories, foodItems } = getState();
-        openOnlineSearch({ categories, foodItems });
-    });
-    root.querySelector('[data-act="restore-templates"]').addEventListener('click', async () => {
-        if (!confirm('Re-seed bundled recipe templates? Existing templates with the same name will be skipped.')) return;
-        try {
-            const result = await seedTemplates({ force: true });
-            DrawUI.toast(
-                result.seeded > 0
-                    ? `Added ${result.seeded} template recipe(s)`
-                    : 'No new templates to add',
-                'success',
-            ).showIn(document.body);
-        } catch (err) {
-            console.error('[food templates]', err);
-            DrawUI.toast(`Templates failed: ${err.message}`, 'error').showIn(document.body);
-        }
-    });
-    root.querySelector('[data-act="import"]').addEventListener('click', async () => {
-        try {
-            const payload = await io.pickJsonFile();
-            if (!payload) return;
-            const strategy = prompt('Import strategy: type "replace", "merge-imported", or "merge-local".', 'merge-imported');
-            if (!strategy) return;
-            const allowed = ['replace', 'merge-imported', 'merge-local'];
-            if (!allowed.includes(strategy)) {
-                DrawUI.toast('Invalid import strategy', 'error').showIn(document.body);
-                return;
-            }
-            const stats = await io.importPayload(payload, strategy);
-            const total = (stats.categories + stats.foodItems + stats.recipes + stats.planEntries);
-            DrawUI.toast(STRINGS.importSuccess(total), 'success').showIn(document.body);
-        } catch (err) {
-            console.error('[food import]', err);
-            DrawUI.toast(`Import failed: ${err.message}`, 'error').showIn(document.body);
-        }
-    });
-    root.querySelector('[data-act="export"]').addEventListener('click', async () => {
-        try {
-            const payload = await io.exportJson();
-            io.downloadJson(payload);
-            DrawUI.toast(STRINGS.exportSuccess, 'success').showIn(document.body);
-        } catch (err) {
-            console.error('[food export]', err);
-            DrawUI.toast(`Export failed: ${err.message}`, 'error').showIn(document.body);
-        }
+    menuSelect?.addEventListener('change', () => {
+        onMenuChange?.(menuSelect.value || '');
     });
 
     function filterByQuery(items, q) {
@@ -119,42 +59,68 @@ export function createLibraryPanel({ getState }) {
         return items.filter((it) => (it.name || '').toLowerCase().includes(needle) || (it.tags || []).some((t) => String(t).toLowerCase().includes(needle)));
     }
 
+    function filterByMenu(items, ids) {
+        if (!ids) return items;
+        const set = new Set(ids);
+        return items.filter((it) => set.has(it.id));
+    }
+
+    function syncMenuSelect(menus, selectedMenuId) {
+        const current = selectedMenuId || '';
+        const options = [
+            `<option value="">${STRINGS.fullLibrary}</option>`,
+            ...(menus || []).map((m) => `<option value="${m.id}">${escapeHtml(m.name)}</option>`),
+        ];
+        menuSelect.innerHTML = options.join('');
+        menuSelect.value = (menus || []).some((m) => m.id === current) ? current : '';
+    }
+
     function render() {
-        const { foodItems, recipes, categories } = getState();
+        const { foodItems, recipes, categories, menus, selectedMenuId } = getState();
         body.innerHTML = '';
+        if (showMenuPicker) syncMenuSelect(menus, selectedMenuId);
 
-        const filteredFoods = filterByQuery(foodItems, query);
-        const filteredRecipes = filterByQuery(recipes, query);
+        const menu = showMenuPicker
+            ? ((menus || []).find((m) => m.id === selectedMenuId) || null)
+            : null;
+        const scopedFoods = menu ? filterByMenu(foodItems, menu.foodItemIds) : foodItems;
+        const scopedRecipes = menu ? filterByMenu(recipes, menu.recipeIds) : recipes;
+
+        const filteredFoods = filterByQuery(scopedFoods, query);
+        const filteredRecipes = filterByQuery(scopedRecipes, query);
         const foodItemsById = Object.fromEntries(foodItems.map((f) => [f.id, f]));
+        const hideEmptyCats = Boolean(query || menu);
 
-        countEl.textContent = `${foodItems.length} foods · ${recipes.length} recipes`;
+        if (menu) {
+            countEl.textContent = `${filteredFoods.length} foods · ${filteredRecipes.length} recipes · ${menu.name}`;
+        } else {
+            countEl.textContent = `${foodItems.length} foods · ${recipes.length} recipes`;
+        }
 
-        if (foodItems.length === 0 && recipes.length === 0) {
+        if (scopedFoods.length === 0 && scopedRecipes.length === 0) {
             const empty = document.createElement('div');
             empty.style.padding = '1rem';
             empty.style.color = 'var(--health-text-dim)';
             empty.style.fontSize = '0.85rem';
             empty.style.textAlign = 'center';
-            empty.textContent = STRINGS.emptyLibrary;
+            empty.textContent = menu
+                ? 'This menu is empty. Add foods and recipes to it in the Library.'
+                : STRINGS.emptyLibrary;
             body.appendChild(empty);
             return;
         }
 
-        // Meal Recipes group (recipes)
         const mealCats = categories.filter((c) => c.kind === 'meal');
         const foodCats = categories.filter((c) => c.kind === 'food');
 
-        const recipesSection = renderGroup('Recipes', '📖', filteredRecipes, mealCats, 'recipe', foodItemsById);
+        const recipesSection = renderGroup('Recipes', '📖', filteredRecipes, mealCats, 'recipe', foodItemsById, hideEmptyCats);
         if (recipesSection) body.appendChild(recipesSection);
 
-        const foodsSection = renderGroup('Foods', '🥕', filteredFoods, foodCats, 'food', foodItemsById);
+        const foodsSection = renderGroup('Foods', '🥕', filteredFoods, foodCats, 'food', foodItemsById, hideEmptyCats);
         if (foodsSection) body.appendChild(foodsSection);
     }
 
-    function renderGroup(title, icon, items, categoriesForGroup, kind, foodItemsById) {
-        if (items.length === 0 && !query) {
-            // Still show category shells so user knows structure exists.
-        }
+    function renderGroup(title, icon, items, categoriesForGroup, kind, foodItemsById, hideEmptyCats) {
         const wrapper = document.createElement('div');
         wrapper.style.marginBottom = '0.75rem';
         const heading = document.createElement('div');
@@ -175,7 +141,7 @@ export function createLibraryPanel({ getState }) {
 
         for (const cat of categoriesForGroup) {
             const catItems = byCat.get(cat.id) || [];
-            if (query && catItems.length === 0) continue;
+            if (hideEmptyCats && catItems.length === 0) continue;
             wrapper.appendChild(renderCategoryBlock(cat, catItems, kind, foodItemsById));
         }
         if (uncategorized.length > 0) {
@@ -237,5 +203,22 @@ export function createLibraryPanel({ getState }) {
         return block;
     }
 
-    return { root, render };
+    return {
+        root,
+        render,
+        focusSearch() {
+            searchInput.focus();
+            searchInput.select();
+        },
+    };
+}
+
+function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+    }[ch]));
 }

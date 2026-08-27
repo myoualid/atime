@@ -1,4 +1,5 @@
 export const CACHE_TTL_15_MIN_MS = 15 * 60 * 1000
+export const CACHE_TTL_DAY_MS = 24 * 60 * 60 * 1000
 
 const STORAGE_PREFIX = 'corevital:http-cache:'
 const memoryCache = new Map()
@@ -82,6 +83,13 @@ function readFreshCache(key, ttlMs) {
 
   memoryCache.set(key, stored)
   return stored.data
+}
+
+/** Return a fresh cached JSON body, or `undefined` on miss / expiry. */
+export function readCachedJson(url, options = {}) {
+  const { namespace = 'default', ttlMs = CACHE_TTL_15_MIN_MS } = options
+  if (!url) return undefined
+  return readFreshCache(cacheKey(namespace, url), ttlMs)
 }
 
 export async function fetchJsonWithCache(url, options = {}) {

@@ -1,11 +1,11 @@
 /**
  * IndexedDB bootstrap for the health module.
- * DB: `corevital-health`, version 4.
+ * DB: `corevital-health`, version 5.
  */
 
 export const DB_NAME = 'corevital-health';
 export const LEGACY_DB_NAME = 'corevital-food';
-export const DB_VERSION = 4;
+export const DB_VERSION = 5;
 
 export const STORES = {
     foodItems: 'foodItems',
@@ -20,6 +20,7 @@ export const STORES = {
     goalPeriods: 'goalPeriods',
     sportDefinitions: 'sportDefinitions',
     sportEntries: 'sportEntries',
+    menus: 'menus',
 };
 
 /** @type {Promise<IDBDatabase> | null} */
@@ -74,6 +75,12 @@ function runMigrations(db, oldVersion) {
             se.createIndex('by_date', 'date');
         }
     }
+    if (oldVersion < 5) {
+        if (!db.objectStoreNames.contains(STORES.menus)) {
+            const menus = db.createObjectStore(STORES.menus, { keyPath: 'id' });
+            menus.createIndex('by_name', 'nameLower');
+        }
+    }
 }
 
 /**
@@ -98,6 +105,9 @@ function ensureStoresPresent(db) {
         } else if (s === STORES.sportEntries) {
             const se = db.createObjectStore(s, { keyPath: 'id' });
             se.createIndex('by_date', 'date');
+        } else if (s === STORES.menus) {
+            const menus = db.createObjectStore(s, { keyPath: 'id' });
+            menus.createIndex('by_name', 'nameLower');
         } else {
             // Generic fallback — creates a keyPath 'id' store without indices.
             db.createObjectStore(s, { keyPath: 'id' });
@@ -125,7 +135,7 @@ function openAtVersion(version) {
         };
         req.onerror = () => reject(req.error);
         req.onblocked = () => reject(new Error(
-            'IndexedDB open blocked: another tab has the Meal Planner open at an older version. Close all other CoreVital Health tabs and reload.',
+            'IndexedDB open blocked: another tab has the Meal Planner open at an older version. Close all other CoreVital Food tabs and reload.',
         ));
     });
 }

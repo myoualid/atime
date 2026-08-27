@@ -8,9 +8,10 @@ import { createWeekView } from './views/weekView.js';
 import { createMonthView } from './views/monthView.js';
 import { openShoppingList } from './shopping/shoppingList.js';
 import * as repos from './store/repos.js';
+import { downloadJson, pickJsonFile } from './store/io.js';
+import { exportMealPlan, importMealPlan, inspectMealPlan } from './store/planIo.js';
 import { healthSignals } from './signals.js';
 import { ALL_SEED_CATEGORIES } from './seed.js';
-import { seedTemplates } from './seed/templateSeeder.js';
 import { rebuildIndex } from './store/search.js';
 import {
     toIsoDate, fromIsoDate, startOfDay, startOfWeek, startOfMonth, endOfMonth,
@@ -19,18 +20,19 @@ import {
 import { STRINGS } from './strings.js';
 
 /**
- * Top-level factory for the food section.
+ * Top-level factory for the meal planner: foods/recipes for the app sidebar,
+ * and the calendar/schedule for the main Planner section.
  * @param {{ core:any, services:any }} ctx
- * @returns {{ root:any, notifyVisible:Function, refresh:Function }}
+ * @returns {{ libraryRoot:HTMLElement, plannerRoot:HTMLElement, notifyVisible:Function, refresh:Function }}
  */
 export function createFoodSection(ctx) {
-    const root = DrawUI.div().setClass('health-section');
-
     // ---------- State ----------
     const state = {
         foodItems: [],
         recipes: [],
         categories: [],
+        menus: [],
+        selectedMenuId: null,
         prefs: null,
         currentDate: startOfDay(getNowFromCore() || new Date()),
         view: 'week', // overridden by prefs on first load
@@ -72,27 +74,34 @@ export function createFoodSection(ctx) {
     }
 
     // ---------- Layout ----------
-    const heading = document.createElement('h2');
-    heading.className = 'health-h';
-    heading.textContent = STRINGS.sectionTitle;
-    root.dom.appendChild(heading);
-
-    const shell = document.createElement('div');
-    shell.className = 'health-shell';
-    root.dom.appendChild(shell);
-
     const library = createLibraryPanel({
         getState: () => ({
             foodItems: state.foodItems,
             recipes: state.recipes,
             categories: state.categories,
+            menus: state.menus,
+            selectedMenuId: state.selectedMenuId,
         }),
+        onMenuChange: (menuId) => {
+            state.selectedMenuId = menuId || null;
+            persistPrefs();
+            library.render();
+        },
     });
-    shell.appendChild(library.root);
+    library.root.setAttribute('aria-label', 'Foods and recipes');
+
+    const plannerRoot = document.createElement('section');
+    plannerRoot.className = 'health-section health-planner-section';
+    plannerRoot.setAttribute('aria-label', STRINGS.sectionTitle);
+
+    const heading = document.createElement('h2');
+    heading.className = 'health-h';
+    heading.textContent = STRINGS.sectionTitle;
+    plannerRoot.appendChild(heading);
 
     const planner = document.createElement('div');
     planner.className = 'health-planner';
-    shell.appendChild(planner);
+    plannerRoot.appendChild(planner);
 
     // Toolbar
     const toolbar = document.createElement('div');
@@ -112,6 +121,8 @@ export function createFoodSection(ctx) {
         <div class="health-toolbar-group">
             <button type="button" data-act="meal-template">${STRINGS.mealTemplate}</button>
             <button type="button" data-act="shopping">${STRINGS.shoppingList}</button>
+            <button type="button" data-act="save-plan">${STRINGS.savePlan}</button>
+            <button type="button" data-act="load-plan">${STRINGS.loadPlan}</button>
         </div>
     `;
     planner.appendChild(toolbar);
@@ -161,6 +172,97 @@ export function createFoodSection(ctx) {
             onSaved: () => refresh(),
         });
     });
+    toolbar.querySelector('[data-act="save-plan"]').addEventListener('click', async () => {
+        try {
+            const { from, to } = getVisibleRange();
+            const fromIso = toIsoDate(from);
+            const toIso = toIsoDate(to);
+            const payload = await exportMealPlan(fromIso, toIso);
+            if (!payload.planEntries.length) {
+                DrawUI.toast(STRINGS.savePlanEmpty, 'warning').showIn(document.body);
+                return;
+            }
+            downloadJson(payload, STRINGS.planExportFilename(fromIso, toIso));
+            DrawUI.toast(STRINGS.savePlanSuccess(payload.planEntries.length), 'success').showIn(document.body);
+        } catch (err) {
+            DrawUI.toast(`Save plan failed: ${err.message}`, 'error').showIn(document.body);
+        }
+    });
+    toolbar.querySelector('[data-act="load-plan"]').addEventListener('click', async () => {
+        try {
+            const payload = await pickJsonFile();
+            if (!payload) return;
+            const preview = inspectMealPlan(payload);
+            if (preview.entryCount === 0 && preview.foodCount === 0 && preview.recipeCount === 0) {
+                throw new Error('No meal plan entries in this file');
+            }
+            let dateMode = 'original';
+            if (preview.entryCount > 0 && preview.from) {
+                const choice = await chooseMealPlanPlacement({
+                    from: preview.from,
+                    to: preview.to || preview.from,
+                    entryCount: preview.entryCount,
+                    view: state.view,
+                });
+                if (!choice) return;
+                dateMode = choice;
+            }
+            const { from } = getVisibleRange();
+            const stats = await importMealPlan(payload, {
+                dateMode,
+                targetFromIso: toIsoDate(from),
+            });
+            DrawUI.toast(STRINGS.loadPlanSuccess(stats), 'success').showIn(document.body);
+        } catch (err) {
+            DrawUI.toast(`Load plan failed: ${err.message}`, 'error').showIn(document.body);
+        }
+    });
+
+    function chooseMealPlanPlacement({ from, to, entryCount, view }) {
+        return new Promise((resolve) => {
+            const panel = DrawUI.floatingPanel({ title: STRINGS.loadPlan, closable: true });
+            const origClose = panel.close.bind(panel);
+            let settled = false;
+            const finish = (value) => {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+                origClose();
+            };
+            panel.close = () => {
+                origClose();
+                if (!settled) {
+                    settled = true;
+                    resolve(null);
+                }
+            };
+
+            const host = document.createElement('div');
+            host.className = 'health-plan-load';
+            const note = document.createElement('p');
+            note.className = 'health-template-note';
+            note.textContent = STRINGS.loadPlanNote(from, to, entryCount);
+            const hint = document.createElement('p');
+            hint.className = 'health-template-note';
+            hint.textContent = STRINGS.loadPlanUpdateNote;
+            const actions = document.createElement('div');
+            actions.className = 'health-plan-load-actions';
+            actions.innerHTML = `
+                <button type="button" class="primary" data-act="shift"></button>
+                <button type="button" data-act="original"></button>
+                <button type="button" data-act="cancel"></button>
+            `;
+            actions.querySelector('[data-act="shift"]').textContent = STRINGS.loadPlanPlaceOn(view);
+            actions.querySelector('[data-act="original"]').textContent = STRINGS.loadPlanOriginalDates;
+            actions.querySelector('[data-act="cancel"]').textContent = STRINGS.cancel;
+            actions.querySelector('[data-act="shift"]').addEventListener('click', () => finish('shift'));
+            actions.querySelector('[data-act="original"]').addEventListener('click', () => finish('original'));
+            actions.querySelector('[data-act="cancel"]').addEventListener('click', () => finish(null));
+            host.append(note, hint, actions);
+            panel.content.appendChild(host);
+            panel.show(document.body);
+        });
+    }
 
     function shiftCurrent(direction) {
         if (state.view === 'day') state.currentDate = addDays(state.currentDate, direction);
@@ -196,17 +298,23 @@ export function createFoodSection(ctx) {
 
     // ---------- Data ----------
     async function loadLibrary() {
-        const [cats, foods, recs] = await Promise.all([
+        const [cats, foods, recs, menuList] = await Promise.all([
             repos.categories.list(),
             repos.foodItems.list(),
             repos.recipes.list(),
+            repos.menus.list(),
         ]);
         state.categories = cats;
         state.foodItems = foods;
         state.recipes = recs;
+        state.menus = menuList;
         state.mealCategories = cats.filter((c) => c.kind === 'meal');
         state.recipesById = Object.fromEntries(recs.map((r) => [r.id, r]));
         state.foodItemsById = Object.fromEntries(foods.map((f) => [f.id, f]));
+        if (state.selectedMenuId && !menuList.some((m) => m.id === state.selectedMenuId)) {
+            state.selectedMenuId = null;
+            persistPrefs();
+        }
         rebuildIndex({ foodItems: foods, recipes: recs });
     }
 
@@ -215,10 +323,11 @@ export function createFoodSection(ctx) {
         if (state.prefs.defaultView && ['day', 'week', 'month'].includes(state.prefs.defaultView)) {
             state.view = state.prefs.defaultView;
         }
+        state.selectedMenuId = state.prefs.selectedMenuId || null;
     }
 
     async function persistPrefs() {
-        await repos.prefs.put({ defaultView: state.view });
+        await repos.prefs.put({ defaultView: state.view, selectedMenuId: state.selectedMenuId || null });
     }
 
     async function loadPlanForVisible() {
@@ -270,25 +379,34 @@ export function createFoodSection(ctx) {
     }
 
     let refreshing = false;
+    let refreshQueued = false;
     async function refresh() {
-        if (refreshing) return;
+        if (refreshing) {
+            refreshQueued = true;
+            return;
+        }
         refreshing = true;
         try {
-            await Promise.all([loadLibrary(), loadPlanForVisible()]);
-            library.render();
-            renderToolbarState();
-            renderCurrentView();
+            do {
+                refreshQueued = false;
+                await Promise.all([loadLibrary(), loadPlanForVisible()]);
+                library.render();
+                renderToolbarState();
+                renderCurrentView();
+            } while (refreshQueued);
         } catch (err) {
             console.error('[food] refresh failed', err);
             DrawUI.toast(`Food: ${err.message}`, 'error').showIn(document.body);
         } finally {
             refreshing = false;
         }
+        if (refreshQueued) refresh();
     }
 
     // ---------- Wire signals ----------
     healthSignals.onLibraryChanged.add(refresh);
     healthSignals.onCategoriesChanged.add(refresh);
+    healthSignals.onMenusChanged.add(refresh);
     healthSignals.onPlanChanged.add(refresh);
     healthSignals.onPrefsChanged.add(refresh);
     healthSignals.onImportCompleted.add(refresh);
@@ -301,15 +419,6 @@ export function createFoodSection(ctx) {
         try {
             await repos.categories.bulkSeedIfEmpty(ALL_SEED_CATEGORIES);
             await loadPrefs();
-            // Seed bundled recipe templates on first run (idempotent via meta flag).
-            try {
-                const result = await seedTemplates();
-                if (result.seeded > 0) {
-                    DrawUI.toast(`Seeded ${result.seeded} template recipes`, 'info').showIn(document.body);
-                }
-            } catch (err) {
-                console.warn('[food] template seed failed (non-fatal)', err);
-            }
             await refresh();
         } catch (err) {
             console.error('[food] init failed', err);
@@ -317,7 +426,12 @@ export function createFoodSection(ctx) {
         }
     }
 
-    return { root, notifyVisible, refresh };
+    return {
+        libraryRoot: library.root,
+        plannerRoot,
+        notifyVisible,
+        refresh,
+    };
 }
 
 // re-export used by drop handlers (import path stability)

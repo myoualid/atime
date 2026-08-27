@@ -6,7 +6,7 @@
  * Free, no API key. A UA string is recommended.
  */
 
-import { CACHE_TTL_15_MIN_MS, fetchJsonWithCache } from '../../../shared/tools/httpCache.js';
+import { CACHE_TTL_DAY_MS, fetchJsonWithCache, readCachedJson } from '../../../shared/tools/httpCache.js';
 
 const BASES = [
     'https://ssl-api.openfoodfacts.org',
@@ -39,13 +39,54 @@ const FIELDS = [
     'states_tags',
 ].join(',');
 
+const OFF_CACHE = { namespace: 'openfoodfacts', ttlMs: CACHE_TTL_DAY_MS };
+const FAIL_COOLDOWN_MS = 5 * 60 * 1000;
+const failedUntil = new Map();
+let lastGoodBase = BASES[0];
+
 /** Safe JSON fetch with timeout. No custom headers (avoids CORS preflight). */
 async function fetchJson(url, { timeoutMs = 8000 } = {}) {
     return fetchJsonWithCache(url, {
-        namespace: 'openfoodfacts',
-        ttlMs: CACHE_TTL_15_MIN_MS,
+        ...OFF_CACHE,
         timeoutMs,
     });
+}
+
+function candidateUrls(paths) {
+    const bases = [lastGoodBase, ...BASES.filter((b) => b !== lastGoodBase)];
+    const out = [];
+    for (const base of bases) {
+        for (const path of paths) out.push({ base, url: base + path });
+    }
+    return out;
+}
+
+/** Try a set of URLs in order until one succeeds. Prefer cache; skip recently-failed hosts. */
+async function fetchJsonAny(paths, opts) {
+    const candidates = candidateUrls(paths);
+    for (const { base, url } of candidates) {
+        const cached = readCachedJson(url, OFF_CACHE);
+        if (cached !== undefined) {
+            lastGoodBase = base;
+            return cached;
+        }
+    }
+
+    let lastErr = null;
+    for (const { base, url } of candidates) {
+        const blockedUntil = failedUntil.get(url);
+        if (blockedUntil && Date.now() < blockedUntil) continue;
+        try {
+            const data = await fetchJson(url, opts);
+            lastGoodBase = base;
+            failedUntil.delete(url);
+            return data;
+        } catch (e) {
+            lastErr = e;
+            failedUntil.set(url, Date.now() + FAIL_COOLDOWN_MS);
+        }
+    }
+    throw lastErr || new Error('All endpoints failed');
 }
 
 /**
@@ -55,18 +96,6 @@ async function fetchJson(url, { timeoutMs = 8000 } = {}) {
  * @param {{ pageSize?: number, page?: number }} [opts]
  * @returns {Promise<Array<OffProduct>>}
  */
-/** Try a set of URLs in order until one succeeds. */
-async function fetchJsonAny(paths, opts) {
-    let lastErr = null;
-    for (const base of BASES) {
-        for (const path of paths) {
-            try { return await fetchJson(base + path, opts); }
-            catch (e) { lastErr = e; }
-        }
-    }
-    throw lastErr || new Error('All endpoints failed');
-}
-
 export async function searchProducts(query, { pageSize = 20, page = 1 } = {}) {
     if (!query || !query.trim()) return [];
     const q = encodeURIComponent(query);
@@ -288,5 +317,51 @@ export function offToFoodItem(p, categoryId = null) {
         },
         details: p.details || null,
         tags: p.categoryTags?.slice(0, 5) || [],
+    };
+}
+
+/** Barcode stored on a library food (ean, externalId, or `off:<code>`). */
+export function foodItemBarcode(item) {
+    const src = item?.source || {};
+    const raw = src.ean || src.externalId || '';
+    return String(raw).replace(/^off:/i, '').trim();
+}
+
+export function findFoodByBarcode(foods, code) {
+    const c = String(code || '').trim();
+    if (!c) return null;
+    return (foods || []).find((f) => foodItemBarcode(f) === c) || null;
+}
+
+export function findFoodByOffProduct(foods, p) {
+    const byCode = findFoodByBarcode(foods, p?.code);
+    if (byCode) return byCode;
+    const name = (p?.brand ? `${p.name} (${p.brand})` : p?.name || '').trim().toLowerCase();
+    if (!name) return null;
+    return (foods || []).find((f) => (f.nameLower || f.name || '').trim().toLowerCase() === name) || null;
+}
+
+/** Rebuild a search-hit shape from a food already stored in the library. */
+export function foodItemToOffProduct(item) {
+    if (!item) return null;
+    const n = item.nutritionPerGram || {};
+    const per100 = (k) => round2((Number(n[k]) || 0) * 100);
+    return {
+        code: foodItemBarcode(item),
+        name: item.name,
+        imageUrl: item.source?.imageUrl || undefined,
+        servingG: item.defaultServingG || 100,
+        nutritionPer100g: {
+            kcal: per100('kcal'),
+            protein_g: per100('protein_g'),
+            carbs_g: per100('carbs_g'),
+            fat_g: per100('fat_g'),
+            fiber_g: per100('fiber_g'),
+            sugar_g: per100('sugar_g'),
+            sodium_mg: per100('sodium_mg'),
+            saturatedFat_g: per100('saturatedFat_g'),
+        },
+        categoryTags: item.tags || [],
+        details: item.details || {},
     };
 }

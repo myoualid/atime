@@ -95,3 +95,12 @@ export function weekdayNames(weekStartsOn = 1) {
 export function isSameDay(a, b) {
     return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
+
+export function daysBetweenIso(fromIso, toIso) {
+    const ms = fromIsoDate(toIso).getTime() - fromIsoDate(fromIso).getTime();
+    return Math.round(ms / 86400000);
+}
+
+export function addDaysIso(iso, n) {
+    return toIsoDate(addDays(fromIsoDate(iso), n));
+}
