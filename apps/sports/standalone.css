@@ -1,0 +1,74 @@
+@import "../../vendor/drawui/drawui.min.css";
+@import "../../fonts/material-symbols-outlined.css";
+@import "../../shared/components/appShell.css";
+
+:root {
+    --sports-app-bg-1: #1a120b;
+    --sports-app-bg-2: #332016;
+    --sports-app-text: #f4f6f8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    min-height: 100%;
+}
+
+body {
+    height: 100dvh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    color: var(--sports-app-text);
+    background:
+        radial-gradient(circle at 12% 15%, rgba(227, 152, 88, 0.22), transparent 42%),
+        radial-gradient(circle at 88% 85%, rgba(170, 90, 64, 0.18), transparent 46%),
+        linear-gradient(160deg, var(--sports-app-bg-1), var(--sports-app-bg-2));
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+.sports-app-main {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px;
+}
+
+.sports-app-main > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+}
+
+.sports-app-main .health-sports-section {
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+}
+
+.app-sidebar:has(.health-sports-library) {
+    flex: 0 1 340px;
+    max-width: min(100%, 480px);
+}
+
+.app-sidebar .health-sports-library {
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+}
+
+.sports-app-error {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}

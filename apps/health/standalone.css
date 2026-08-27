@@ -1,4 +1,6 @@
+@import "../../vendor/drawui/drawui.min.css";
 @import "../../fonts/material-symbols-outlined.css";
+@import "../../shared/components/appShell.css";
 
 :root {
     --health-app-bg-1: #0b1a12;
@@ -36,89 +38,6 @@ body {
     overflow: hidden;
 }
 
-.health-app-shell {
-    display: flex;
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    overflow: hidden;
-}
-
-.health-app-sidebar {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    width: 64px;
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(0, 0, 0, 0.22);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.health-app-nav {
-    display: flex;
-    flex-direction: column;
-}
-
-.health-app-nav-divider {
-    height: 1px;
-    margin: 4px 8px;
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.health-app-nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-height: 48px;
-    padding: 8px 4px;
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.72);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    transition: background 0.15s ease, color 0.15s ease;
-}
-
-.health-app-nav-link {
-    text-decoration: none;
-}
-
-.health-app-nav-btn:hover {
-    color: rgba(255, 255, 255, 0.95);
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.health-app-nav-btn:focus-visible {
-    outline: 2px solid #d4af37;
-    outline-offset: 2px;
-}
-
-.health-app-nav-btn[aria-pressed="true"],
-.health-app-nav-btn.is-active {
-    background: rgba(212, 175, 55, 0.14);
-    color: #d4af37;
-}
-
-.health-app-nav-icon {
-    font-size: 1.35rem;
-    line-height: 1;
-}
-
-.health-app-nav-label {
-    display: block;
-    text-align: center;
-    line-height: 1.15;
-    max-width: 100%;
-    word-break: break-word;
-}
-
 .health-app-main {
     display: flex;
     flex: 1;
@@ -141,9 +60,23 @@ body {
     min-height: 0;
 }
 
-.FloatingPanel {
+.app-sidebar:has(.health-library),
+.app-sidebar:has(.health-library-nav) {
+    flex: 0 1 340px;
+    max-width: min(100%, 480px);
+}
+
+.app-sidebar .health-library,
+.app-sidebar .health-library-nav {
+    flex: 1;
+    height: 100%;
+    min-height: 0;
+}
+
+.FloatingPanel,
+.FloatingWindow {
     position: fixed;
-    left: max(72px, 8vw);
+    left: max(16px, 4vw);
     top: 54px;
     width: min(560px, calc(100vw - 96px));
     min-width: 320px;
@@ -161,24 +94,29 @@ body {
     backdrop-filter: blur(8px);
 }
 
-.FloatingPanel .Row {
+.FloatingPanel .Row,
+.FloatingWindow .Row {
     display: flex;
     flex-direction: row;
 }
 
-.FloatingPanel .centered-vertical {
+.FloatingPanel .centered-vertical,
+.FloatingWindow .centered-vertical {
     align-items: center;
 }
 
-.FloatingPanel .justify-between {
+.FloatingPanel .justify-between,
+.FloatingWindow .justify-between {
     justify-content: space-between;
 }
 
-.FloatingPanel .fill-width {
+.FloatingPanel .fill-width,
+.FloatingWindow .fill-width {
     width: 100%;
 }
 
-.FloatingPanel-header {
+.FloatingPanel-header,
+.FloatingWindow > .Header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -187,7 +125,8 @@ body {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.FloatingPanel-content {
+.FloatingPanel-content,
+.FloatingWindow-content {
     flex: 1;
     min-height: 0;
     overflow: auto;
@@ -195,7 +134,8 @@ body {
 }
 
 @media (max-width: 720px) {
-    .FloatingPanel {
+    .FloatingPanel,
+    .FloatingWindow {
         left: 10px;
         right: 10px;
         width: auto;
@@ -208,8 +148,8 @@ body {
 .health-library-review {
     height: 100%;
     min-height: 0;
-    display: grid;
-    grid-template-rows: auto auto auto minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
@@ -236,6 +176,34 @@ body {
     margin: 0;
     color: rgba(244, 246, 248, 0.72);
     font-size: 0.88rem;
+}
+
+.health-library-review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.health-library-review-actions button {
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(0, 0, 0, 0.22);
+    color: rgba(255, 255, 255, 0.88);
+    cursor: pointer;
+}
+
+.health-library-review-actions button.primary {
+    background: rgba(212, 175, 55, 0.18);
+    border-color: rgba(212, 175, 55, 0.45);
+    color: #d4af37;
+}
+
+.health-library-review-actions button:hover {
+    background: rgba(212, 175, 55, 0.12);
+    border-color: rgba(212, 175, 55, 0.4);
 }
 
 .health-library-review-controls {
@@ -339,6 +307,7 @@ body {
 .health-library-review-content {
     min-height: 0;
     overflow: auto;
+    flex: 1 1 auto;
 }
 
 .health-library-review-empty {
@@ -413,6 +382,17 @@ body {
     color: #8fc3df;
     border-color: rgba(143, 195, 223, 0.55);
     background: rgba(143, 195, 223, 0.12);
+}
+
+.kind-menu {
+    color: #d4af37;
+    border-color: rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.12);
+}
+
+.FloatingPanel.health-menu-editor-panel,
+.FloatingWindow.health-menu-editor-panel {
+    width: min(720px, calc(100vw - 96px));
 }
 
 .health-library-review-cards {
@@ -498,14 +478,6 @@ body {
 }
 
 @media (max-width: 520px) {
-    .health-app-nav-label {
-        display: none;
-    }
-
-    .health-app-nav-btn {
-        min-height: 52px;
-    }
-
     .health-library-review {
         padding: 10px;
     }
@@ -514,40 +486,19 @@ body {
         grid-template-columns: 1fr;
     }
 
+    .health-library-review-kind-tabs {
+        width: 100%;
+    }
+
+    .health-library-review-kind-tabs button {
+        flex: 1;
+        min-width: 0;
+    }
+
     .health-library-review-list-row,
     .health-library-review-list-row.is-head {
         grid-template-columns: 1fr;
         gap: 4px;
         padding: 9px;
-    }
-}
-
-@media (min-width: 640px) {
-    .health-app-sidebar {
-        width: 84px;
-    }
-
-    .health-app-nav-btn {
-        font-size: 0.68rem;
-    }
-}
-
-@media (min-width: 900px) {
-    .health-app-sidebar {
-        width: 200px;
-    }
-
-    .health-app-nav-btn {
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 12px;
-        min-height: 48px;
-        padding: 12px 14px;
-        font-size: 0.8rem;
-    }
-
-    .health-app-nav-label {
-        text-align: left;
     }
 }

@@ -1,15 +1,13 @@
 /**
- * Sports planner section.
+ * Sports planner app.
  *
- * Reuses the shared drag/drop primitives from ../planner/dragdrop.js and the
- * shared date math from ../dates.js — the same code used by the meal planner.
- * A distinct MIME (`application/x-health-sport-drag`) isolates sport drags
- * from meal drags so a sport chip cannot be dropped into a meal slot.
+ * Reuses meal-planner drag/drop and date helpers, plus the shared health
+ * IndexedDB stores for sport definitions and planned sessions.
  */
-import { makeDraggable, makeDropTarget, promptForNumber } from '../planner/dragdrop.js';
-import { toIsoDate, addDays, startOfWeek, startOfMonth, endOfMonth, eachDayOfRange, formatShortDay, formatLongDate, isSameDay, weekdayNames } from '../dates.js';
-import { sportDefinitions, sportPlan, prefs } from '../store/repos.js';
-import { healthSignals } from '../signals.js';
+import { makeDraggable, makeDropTarget, promptForNumber } from '../health/planner/dragdrop.js';
+import { toIsoDate, addDays, startOfWeek, startOfMonth, endOfMonth, eachDayOfRange, formatShortDay, formatLongDate, isSameDay, weekdayNames } from '../health/dates.js';
+import { sportDefinitions, sportPlan, prefs } from '../health/store/repos.js';
+import { healthSignals } from '../health/signals.js';
 import { DEFAULT_SPORTS } from './seed.js';
 
 const SPORT_MIME = 'application/x-health-sport-drag';
@@ -187,7 +185,6 @@ function openEditor(existing, onSaved) {
 // ---------- Main section factory ----------
 
 export function createSportsSection() {
-    const root = el('section', { class: 'health-section health-sports-section' });
     const state = {
         view: 'week',          // 'day' | 'week' | 'month'
         current: new Date(),
@@ -196,7 +193,16 @@ export function createSportsSection() {
         weekStartsOn: 1,
     };
 
-    // Header
+    const libraryRoot = el('aside', {
+        class: 'health-sports-library',
+        'aria-label': 'Sports library',
+    });
+
+    const plannerRoot = el('section', {
+        class: 'health-section health-sports-section',
+        'aria-label': 'Sports planner',
+    });
+
     const header = el('header', { class: 'health-sports-header' });
     const title = el('h2', { class: 'health-h' }, 'Sports planner');
     const viewToggle = el('div', { class: 'health-sports-view-toggle' });
@@ -216,14 +222,10 @@ export function createSportsSection() {
     navRow.append(prevBtn, currentLabel, nextBtn, todayBtn);
 
     header.append(title, viewToggle, navRow);
-    root.appendChild(header);
+    plannerRoot.appendChild(header);
 
-    // Body: library + calendar
-    const body = el('div', { class: 'health-sports-body' });
-    const libraryCol = el('aside', { class: 'health-sports-library' });
     const calendarCol = el('div', { class: 'health-sports-calendar' });
-    body.append(libraryCol, calendarCol);
-    root.appendChild(body);
+    plannerRoot.appendChild(calendarCol);
 
     function shiftCurrent(dir) {
         if (state.view === 'day') state.current = addDays(state.current, dir);
@@ -251,21 +253,21 @@ export function createSportsSection() {
     }
 
     function renderLibrary() {
-        libraryCol.innerHTML = '';
+        libraryRoot.innerHTML = '';
         const head = el('div', { class: 'health-sports-library-head' }, [
-            el('h3', { class: 'health-h' }, 'Sports library'),
+            el('h3', { class: 'health-h' }, 'Sports'),
             el('button', { type: 'button', class: 'health-btn health-btn--primary' }, '+ Sport'),
         ]);
         head.querySelector('button').addEventListener('click', () => {
             openEditor(null, () => { /* signal triggers refresh */ });
         });
-        libraryCol.appendChild(head);
+        libraryRoot.appendChild(head);
         const grid = el('div', { class: 'health-sports-library-grid' });
         if (!state.defs.length) {
             grid.appendChild(el('p', { class: 'health-empty' }, 'No sports yet. Click "+ Sport" to add one.'));
         }
         for (const def of state.defs) grid.appendChild(libraryChip(def, openEditor));
-        libraryCol.appendChild(grid);
+        libraryRoot.appendChild(grid);
     }
 
     async function renderCalendar() {
@@ -372,5 +374,5 @@ export function createSportsSection() {
     healthSignals.onSportsLibraryChanged.add(() => { render().catch(() => {}); });
     healthSignals.onSportsPlanChanged.add(() => { render().catch(() => {}); });
 
-    return { root, refresh };
+    return { libraryRoot, plannerRoot, refresh };
 }
