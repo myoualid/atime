@@ -1,8 +1,8 @@
 /**
  * CoreVital DrawUI entry.
  *
- * JavaScript and CSS come from the built DrawUI bundle at vendor/drawui,
- * which is a junction to the DrawUI repo's docs/dist (see scripts/link-drawui.ps1).
+ * JavaScript and CSS come from the built DrawUI bundle at vendor/drawui.
+ * Refresh those files with scripts/link-drawui.ps1 after rebuilding DrawUI.
  * CamelCase factories keep existing CoreVital call sites working.
  */
 import {
