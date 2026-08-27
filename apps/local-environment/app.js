@@ -1,9 +1,12 @@
+import { DrawUI } from '../../shared/drawUI/index.js';
 import { createCore } from '../time/core.js';
 import { createOps } from '../time/ops.js';
 import { createWeatherSection } from './weatherSection.js';
 import { createTideSection } from './tideSection.js';
-import { fetchJson, forecastCurrentOnlyUrl } from './openMeteo.js';
-import { createAppFooter } from '../../shared/components/appFooter.js';
+import { createWaveSection } from './waveSection.js';
+import { createGeneralSection } from './generalSection.js';
+import { createAppShell } from '../../shared/components/appShell.js';
+import { refreshFooterWeather } from '../../shared/components/footerWeather.js';
 
 const LEAFLET_CSS_URL =
     'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
@@ -85,120 +88,81 @@ function createLocationService(core, ops) {
     };
 }
 
-function buildShell() {
-    const shell = document.createElement('div');
-    shell.className = 'app-shell';
-
-    const mainRow = document.createElement('div');
-    mainRow.className = 'app-main-row';
-
-    const sideNav = document.createElement('nav');
-    sideNav.className = 'app-side-nav';
-    sideNav.setAttribute('aria-label', 'Local Environement sections');
-
-    const mainPanel = document.createElement('div');
-    mainPanel.className = 'Panel app-main-panel';
-
-    const scrollInner = document.createElement('div');
-    scrollInner.className = 'app-panel-scroll';
-
-    const intro = document.createElement('header');
-    intro.className = 'location-info';
-    intro.innerHTML = [
-        '<span class="location-icon" aria-hidden="true">📍</span>',
-        '<span class="location-name-row">',
-        '  <span class="location-text">Loading location...</span>',
-        '  <button class="location-map-btn" type="button" aria-expanded="false">Map</button>',
-        '</span>',
-        '<span class="location-coords"></span>',
-    ].join('');
-
-    const locationMapPanel = document.createElement('section');
-    locationMapPanel.className = 'location-map-panel';
-    locationMapPanel.hidden = true;
-    locationMapPanel.innerHTML = [
-        '<div class="location-map-header">',
-        '  <h3>OpenStreetMap View</h3>',
-        '  <button class="location-map-close" type="button" aria-label="Close map">Close</button>',
-        '</div>',
-        '<div class="location-map-meta"></div>',
-        '<div class="location-map-legend">',
-        '  <span class="location-map-legend-item"><span class="location-map-dot is-current"></span>Your location</span>',
-        '  <span class="location-map-legend-item"><span class="location-map-dot is-marine"></span>Marine calculation grid point</span>',
-        '</div>',
-        '<div class="location-map-canvas" role="img" aria-label="Map showing your location and marine calculation reference"></div>',
-        '<div class="location-map-footnote">Marine point is sourced from the Open-Meteo marine response latitude/longitude.</div>',
-    ].join('');
-
-    const sectionWeather = document.createElement('section');
-    sectionWeather.id = 'section-weather';
-    sectionWeather.className = 'app-section';
-
-    const sectionTides = document.createElement('section');
-    sectionTides.id = 'section-tides';
-    sectionTides.className = 'app-section';
-
-    scrollInner.append(intro, locationMapPanel, sectionWeather, sectionTides);
-    mainPanel.appendChild(scrollInner);
-    mainRow.append(sideNav, mainPanel);
-
-    const footer = createAppFooter({ showPhase: false });
-
-    shell.append(mainRow, footer.el);
-
-    return {
-        shell,
-        sideNav,
-        scrollInner,
-        intro,
-        locationMapPanel,
-        sectionWeather,
-        sectionTides,
-        footer,
-    };
+function legendItem(dotClass, label) {
+    const item = DrawUI.span();
+    item.setClass('location-map-legend-item');
+    const dot = DrawUI.span();
+    dot.setClass(`location-map-dot ${dotClass}`);
+    const text = DrawUI.span(label);
+    item.add(dot, text);
+    return item;
 }
 
-function buildNav(sideNav, onSelect) {
-    const links = [
-        { href: '../../', label: 'Launcher', icon: '⌂' },
-        { href: '../time/', label: 'Time', icon: '⌚' },
-        { href: '../food/', label: 'Food', icon: '☰' },
-    ];
+function buildContent() {
+    const locationMapPanel = DrawUI.div();
+    locationMapPanel.setClass('location-map-panel');
+    locationMapPanel.setHidden(true);
 
-    for (const link of links) {
-        const a = document.createElement('a');
-        a.className = 'app-nav-btn';
-        a.href = link.href;
-        a.innerHTML = `<span class="app-nav-icon" aria-hidden="true">${link.icon}</span><span class="app-nav-label">${link.label}</span>`;
-        sideNav.appendChild(a);
-    }
+    const mapHeader = DrawUI.div();
+    mapHeader.setClass('location-map-header');
+    const mapTitle = DrawUI.h3('OpenStreetMap View');
+    const mapCloseBtn = DrawUI.button('Close');
+    mapCloseBtn.setClass('location-map-close');
+    mapCloseBtn.dom.type = 'button';
+    mapCloseBtn.dom.setAttribute('aria-label', 'Close map');
+    mapHeader.add(mapTitle, mapCloseBtn);
 
-    const divider = document.createElement('div');
-    divider.style.height = '1px';
-    divider.style.margin = '6px 0 8px';
-    divider.style.background = 'rgba(255,255,255,0.12)';
-    sideNav.appendChild(divider);
+    const mapMeta = DrawUI.div();
+    mapMeta.setClass('location-map-meta');
 
-    const sections = [
-        { id: 'section-weather', label: 'Weather', icon: '☁' },
-        { id: 'section-tides', label: 'Tides', icon: '≋' },
-    ];
+    const mapLegend = DrawUI.div();
+    mapLegend.setClass('location-map-legend');
+    mapLegend.add(
+        legendItem('is-current', 'Your location'),
+        legendItem('is-marine', 'Marine calculation grid point'),
+    );
 
-    const buttons = [];
+    const mapCanvas = DrawUI.div();
+    mapCanvas.setClass('location-map-canvas');
+    mapCanvas.dom.setAttribute('role', 'img');
+    mapCanvas.dom.setAttribute(
+        'aria-label',
+        'Map showing your location and marine calculation reference',
+    );
 
-    for (const spec of sections) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'app-nav-btn';
-        btn.dataset.section = spec.id;
-        btn.setAttribute('aria-label', spec.label);
-        btn.innerHTML = `<span class="app-nav-icon" aria-hidden="true">${spec.icon}</span><span class="app-nav-label">${spec.label}</span>`;
-        btn.addEventListener('click', () => onSelect(spec.id));
-        sideNav.appendChild(btn);
-        buttons.push(btn);
-    }
+    const mapFootnote = DrawUI.div();
+    mapFootnote.setClass('location-map-footnote');
+    mapFootnote.dom.textContent =
+        'Marine point is sourced from the Open-Meteo marine response latitude/longitude.';
 
-    return { buttons, sections };
+    locationMapPanel.add(mapHeader, mapMeta, mapLegend, mapCanvas, mapFootnote);
+
+    const sectionGeneral = DrawUI.div();
+    sectionGeneral.setId('section-general');
+    sectionGeneral.setClass('app-section');
+
+    const sectionWeather = DrawUI.div();
+    sectionWeather.setId('section-weather');
+    sectionWeather.setClass('app-section');
+
+    const sectionTides = DrawUI.div();
+    sectionTides.setId('section-tides');
+    sectionTides.setClass('app-section');
+
+    const sectionWaves = DrawUI.div();
+    sectionWaves.setId('section-waves');
+    sectionWaves.setClass('app-section');
+
+    return {
+        locationMapPanel,
+        mapCloseBtn,
+        mapMeta,
+        mapCanvas,
+        sectionGeneral,
+        sectionWeather,
+        sectionTides,
+        sectionWaves,
+    };
 }
 
 (async function bootLocalEnvironement() {
@@ -207,24 +171,102 @@ function buildNav(sideNav, onSelect) {
     const LocationService = createLocationService(core, ops);
     const services = { LocationService };
 
+    const sectionSpecs = [
+        { id: 'section-general', label: 'General', icon: 'dashboard' },
+        { id: 'section-weather', label: 'Weather', icon: 'partly_cloudy_day' },
+        { id: 'section-tides', label: 'Tides', icon: 'water' },
+        { id: 'section-waves', label: 'Waves', icon: 'waves' },
+    ];
+
     const {
-        shell,
-        sideNav,
-        scrollInner,
-        intro,
         locationMapPanel,
+        mapCloseBtn,
+        mapMeta,
+        mapCanvas,
+        sectionGeneral,
         sectionWeather,
         sectionTides,
+        sectionWaves,
+    } = buildContent();
+
+    const sectionEls = {
+        'section-general': sectionGeneral,
+        'section-weather': sectionWeather,
+        'section-tides': sectionTides,
+        'section-waves': sectionWaves,
+    };
+
+    /** @type {{ notifyVisible: Function, root: *, dispose?: Function, controlsPanel?: * } | undefined} */
+    let generalUI;
+    /** @type {{ notifyVisible: Function, root: *, dispose?: Function, controlsPanel?: * } | undefined} */
+    let weatherUI;
+    /** @type {{ notifyVisible: Function, root: *, dispose?: Function, controlsPanel?: * } | undefined} */
+    let tideUI;
+    /** @type {{ notifyVisible: Function, root: *, dispose?: Function, controlsPanel?: * } | undefined} */
+    let waveUI;
+
+    const {
+        root: shell,
+        sidebar,
+        scrollInner,
         footer,
-    } = buildShell();
+        setSection,
+        dispose,
+    } = createAppShell({
+        currentApp: 'local-environment',
+        sections: sectionSpecs,
+        initialSection: 'section-general',
+        footer: { showPhase: false, showMap: true },
+        onSection(sectionId) {
+            showSection(sectionId);
+        },
+        sectionNavLabel: 'Local Environment sections',
+    });
+
+    sidebar.addClass('app-sidebar-nav');
+    sidebar.dom.setAttribute('aria-label', 'Local Environment controls');
+    sidebar.dom.hidden = false;
+
+    const notifyBySection = {
+        'section-general': () => generalUI?.notifyVisible(),
+        'section-weather': () => weatherUI?.notifyVisible(),
+        'section-tides': () => tideUI?.notifyVisible(),
+        'section-waves': () => waveUI?.notifyVisible(),
+    };
+
+    function controlPanels() {
+        return {
+            'section-general': generalUI?.controlsPanel,
+            'section-weather': weatherUI?.controlsPanel,
+            'section-tides': tideUI?.controlsPanel,
+            'section-waves': waveUI?.controlsPanel,
+        };
+    }
+
+    function showSection(sectionId) {
+        for (const [id, node] of Object.entries(sectionEls)) {
+            if (id === sectionId) node.addClass('is-active');
+            else node.removeClass('is-active');
+        }
+        for (const [id, panel] of Object.entries(controlPanels())) {
+            panel?.setHidden(id !== sectionId);
+        }
+        scrollInner.dom.scrollTop = 0;
+        notifyBySection[sectionId]?.();
+    }
+
+    scrollInner.add(
+        locationMapPanel,
+        sectionGeneral,
+        sectionWeather,
+        sectionTides,
+        sectionWaves,
+    );
 
     document.body.innerHTML = '';
-    document.body.appendChild(shell);
+    document.body.appendChild(shell.dom);
 
-    const mapToggleBtn = intro.querySelector('.location-map-btn');
-    const mapCloseBtn = locationMapPanel.querySelector('.location-map-close');
-    const mapMeta = locationMapPanel.querySelector('.location-map-meta');
-    const mapCanvas = locationMapPanel.querySelector('.location-map-canvas');
+    const mapToggleBtn = footer.mapButton;
 
     /** @type {{ lat: number; lon: number; source: string } | null} */
     let marineReference = null;
@@ -245,26 +287,26 @@ function buildNav(sideNav, onSelect) {
             : 'Unknown';
         const marineLabel = marineReference
             ? formatCoords(marineReference.lat, marineReference.lon)
-            : 'Not available yet (open Tides section to load marine data)';
-        mapMeta.textContent = `Current: ${currentLabel} · Marine grid: ${marineLabel}`;
+            : 'Not available yet (open Tides or Waves to load marine data)';
+        mapMeta.dom.textContent = `Current: ${currentLabel} · Marine grid: ${marineLabel}`;
     }
 
     async function refreshLocationMap() {
         updateMapMeta();
-        if (locationMapPanel.hidden) return;
+        if (locationMapPanel.isHidden()) return;
 
         const curLat = services.LocationService.latitude;
         const curLon = services.LocationService.longitude;
         const hasCurrent = hasValidCoords(curLat, curLon);
 
         if (!hasCurrent) {
-            mapMeta.textContent = 'Current location is unavailable.';
+            mapMeta.dom.textContent = 'Current location is unavailable.';
             return;
         }
 
         const L = await ensureLeafletLoaded();
         if (!mapInstance) {
-            mapInstance = L.map(mapCanvas, {
+            mapInstance = L.map(mapCanvas.dom, {
                 zoomControl: true,
                 attributionControl: true,
             });
@@ -338,83 +380,64 @@ function buildNav(sideNav, onSelect) {
     }
 
     function setMapPanelOpen(open) {
-        locationMapPanel.hidden = !open;
-        mapToggleBtn.setAttribute('aria-expanded', String(open));
+        locationMapPanel.setHidden(!open);
+        mapToggleBtn?.setAttribute('aria-expanded', String(open));
+        mapToggleBtn?.classList.toggle('is-open', open);
         if (open) {
             if (!marineReference) {
-                tideUI.notifyVisible();
+                generalUI?.notifyVisible();
+                tideUI?.notifyVisible();
             }
             refreshLocationMap().catch((err) => {
-                mapMeta.textContent = `Map failed to load: ${err?.message || err}`;
+                mapMeta.dom.textContent = `Map failed to load: ${err?.message || err}`;
             });
         }
     }
 
-    const weatherUI = createWeatherSection({ core, services });
-    const tideUI = createTideSection({
+    function onMarineReferenceChanged(coords) {
+        marineReference = coords;
+        refreshLocationMap().catch(() => {
+            /* map may still be closed */
+        });
+    }
+
+    generalUI = createGeneralSection({
         core,
         services,
-        onMarineReferenceChanged(coords) {
-            marineReference = coords;
-            refreshLocationMap().catch(() => {
-                /* map may still be closed */
-            });
-        },
+        onMarineReferenceChanged,
     });
-    sectionWeather.appendChild(weatherUI.root.dom ?? weatherUI.root);
-    sectionTides.appendChild(tideUI.root.dom ?? tideUI.root);
-
-    mapToggleBtn.addEventListener('click', () => {
-        setMapPanelOpen(locationMapPanel.hidden);
+    weatherUI = createWeatherSection({ core, services });
+    tideUI = createTideSection({
+        core,
+        services,
+        onMarineReferenceChanged,
     });
-    mapCloseBtn.addEventListener('click', () => {
-        setMapPanelOpen(false);
+    waveUI = createWaveSection({
+        core,
+        services,
+        onMarineReferenceChanged,
     });
 
-    const sectionEls = {
-        'section-weather': sectionWeather,
-        'section-tides': sectionTides,
-    };
+    sectionGeneral.add(generalUI.root);
+    sectionWeather.add(weatherUI.root);
+    sectionTides.add(tideUI.root);
+    sectionWaves.add(waveUI.root);
 
-    function activateSection(sectionId) {
-        for (const [id, node] of Object.entries(sectionEls)) {
-            if (id === sectionId) node.classList.add('is-active');
-            else node.classList.remove('is-active');
-        }
-
-        nav.buttons.forEach((btn) => {
-            const on = btn.dataset.section === sectionId;
-            btn.setAttribute('aria-pressed', String(on));
-            if (on) btn.setAttribute('aria-current', 'true');
-            else btn.removeAttribute('aria-current');
-        });
-
-        scrollInner.scrollTop = 0;
-
-        if (sectionId === 'section-weather') {
-            weatherUI.notifyVisible();
-        }
-        if (sectionId === 'section-tides') {
-            tideUI.notifyVisible();
-        }
+    for (const panel of Object.values(controlPanels())) {
+        if (panel) sidebar.add(panel);
     }
 
-    const nav = buildNav(sideNav, activateSection);
+    mapToggleBtn?.addEventListener('click', () => {
+        setMapPanelOpen(locationMapPanel.isHidden());
+    });
+    mapCloseBtn.onClick(() => {
+        setMapPanelOpen(false);
+    });
 
     function updateLocationLabels() {
         const name = services.LocationService.locationName || 'Unknown location';
         const lat = services.LocationService.latitude;
         const lon = services.LocationService.longitude;
-        const coords = Number.isFinite(lat) && Number.isFinite(lon)
-            ? `(${lat.toFixed(2)}°, ${lon.toFixed(2)}°)`
-            : '';
-
-        document.querySelectorAll('.location-text').forEach((el) => {
-            el.textContent = name;
-        });
-        document.querySelectorAll('.location-coords').forEach((el) => {
-            el.textContent = coords;
-        });
 
         footer.setLocation(name, lat, lon);
         refreshLocationMap().catch(() => {
@@ -422,62 +445,38 @@ function buildNav(sideNav, onSelect) {
         });
     }
 
-    async function refreshFooterWeather() {
-        try {
-            const lat = services.LocationService.latitude;
-            const lon = services.LocationService.longitude;
-            if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-
-            const json = await fetchJson(forecastCurrentOnlyUrl(lat, lon, 'auto'));
-            const cur = json?.current;
-
-            if (typeof cur?.temperature_2m === 'number') {
-                footer.setTemp(`${cur.temperature_2m.toFixed(1)}°C`);
-            }
-            if (typeof cur?.wind_speed_10m === 'number') {
-                footer.setWind(`${cur.wind_speed_10m.toFixed(1)} km/h`);
-            }
-        } catch {
-            footer.setTemp('--.-°C');
-            footer.setWind('--.- km/h');
-        }
-    }
-
-    function tickClock() {
-        const now = new Date();
-        footer.setTime(now.toLocaleTimeString(undefined, {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-        }));
-    }
+    const updateFooterWeather = () => refreshFooterWeather(
+        footer,
+        services.LocationService.latitude,
+        services.LocationService.longitude,
+    );
 
     const onLocationChanged = () => {
         updateLocationLabels();
-        refreshFooterWeather();
+        updateFooterWeather();
     };
 
     core.signals.onLocationChanged.add(onLocationChanged);
 
     updateLocationLabels();
     updateMapMeta();
-    tickClock();
-    setInterval(tickClock, 1000);
-
-    activateSection('section-weather');
+    setSection('section-general');
 
     try {
         await services.LocationService.requestLocation();
         updateLocationLabels();
     } finally {
-        refreshFooterWeather();
+        await updateFooterWeather();
     }
 
     window.addEventListener('beforeunload', () => {
         core.signals.onLocationChanged.remove(onLocationChanged);
+        generalUI.dispose?.();
         weatherUI.dispose?.();
         tideUI.dispose?.();
+        waveUI.dispose?.();
         mapInstance?.remove();
         mapInstance = null;
+        dispose();
     });
 })();
